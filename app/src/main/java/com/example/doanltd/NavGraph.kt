@@ -41,7 +41,7 @@ fun AuthNavigation() {
         composable(Screen.Chat.route) {
             ChatScreen(navController)
         }
-        composable(Screen.Chat.route) {
+        composable(Screen.Setting.route) {
             SettingScreen(navController)
         }
 

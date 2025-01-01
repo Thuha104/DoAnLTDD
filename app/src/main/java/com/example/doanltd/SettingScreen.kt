@@ -55,7 +55,7 @@ fun SettingScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
                     label = { Text("Cài Đặt") },
                     selected = true,
-                    onClick = { }
+                    onClick = { navController.navigate(Screen.Setting.route)}
                 )
             }
         }
