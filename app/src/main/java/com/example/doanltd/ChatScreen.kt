@@ -33,7 +33,7 @@ fun ChatScreen(navController: NavController) {
         mutableStateOf(
             listOf(
                 ChatMessage("tôi có thể giúp gì cho bạn??", "QL", "QL", true),
-                ChatMessage("hello", "NgD", "NgD", false)
+                ChatMessage("Shop có thể tư vấn giúp mình được không ạ?", "Nguoi Dung", "Nguoi Dung", false)
             )
         )
     }

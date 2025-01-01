@@ -55,7 +55,7 @@ fun ProfileScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
                     label = { Text("Cài Đặt") },
                     selected = false,
-                    onClick = { }
+                    onClick = { navController.navigate(Screen.Setting.route)}
                 )
             }
         }

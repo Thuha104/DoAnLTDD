@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -64,7 +65,7 @@ fun MessageScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
                     label = { Text("Cài Đặt") },
                     selected = false,
-                    onClick = { }
+                    onClick = { navController.navigate(Screen.Setting.route)}
                 )
             }
         }
@@ -93,7 +94,13 @@ fun MessageScreen(navController: NavController) {
                                 .size(48.dp)
                                 .clip(CircleShape)
                                 .background(Color(0xFF6D88F4))
-                        )
+                        ){
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
 
                         // Message preview content
                         Column(
@@ -102,12 +109,12 @@ fun MessageScreen(navController: NavController) {
                                 .weight(1f)
                         ) {
                             Text(
-                                "Tân",
+                                "Nguoi Dung",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                "Hello",
+                                "Shop có thể tư vấn giúp mình được không ạ?",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.Gray
                             )

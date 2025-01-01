@@ -46,22 +46,20 @@ fun HomeScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
                     label = { Text("Giỏ Hàng") },
                     selected = false,
-                    onClick = { }
+                    onClick = {}
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
                     label = { Text("Thông Tin") },
                     selected = false,
-                    onClick = {
-
-                        navController.navigate(Screen.Profile.route)
+                    onClick = { navController.navigate(Screen.Profile.route)
                     }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
                     label = { Text("Cài Đặt") },
                     selected = false,
-                    onClick = { }
+                    onClick = {navController.navigate(Screen.Setting.route) }
                 )
             }
         }
