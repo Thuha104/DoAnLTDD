@@ -3,6 +3,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.doanltd.CartScreen
 import com.example.doanltd.ChatScreen
 import com.example.doanltd.MessageScreen
 
@@ -16,6 +17,7 @@ sealed class Screen(val route: String) {
     object Mesage:Screen("message")
     object Chat:Screen("chat")
     object Setting:Screen("setting")
+    object Cart:Screen("cart")
 
 }
 
@@ -43,6 +45,9 @@ fun AuthNavigation() {
         }
         composable(Screen.Setting.route) {
             SettingScreen(navController)
+        }
+        composable(Screen.Cart.route){
+            CartScreen(navController)
         }
 
     }

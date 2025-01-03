@@ -84,13 +84,16 @@ fun ChatScreen(navController: NavController) {
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinedTextField(
                         value = "",
                         onValueChange = { },
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Nhập tin nhắn...") }
+                        placeholder = { Text("Nhập tin nhắn...") },
+
+
                     )
                     IconButton(
                         onClick = { /* Handle send */ },
