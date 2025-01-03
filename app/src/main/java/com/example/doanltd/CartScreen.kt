@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -55,39 +56,40 @@ fun CartScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { Text("Giỏ hàng") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
             )
         },
         bottomBar = {
             Column {
-                // Tổng giá và nút thanh toán
-                Surface(
-                    modifier = Modifier.fillMaxWidth().size(8.dp)
+                Column(
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Absolute.Right,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
-                            Text("65.000đ")
+                            Text(
+                                "65.000đ",
+                                textAlign = TextAlign.Right,
+                                style = MaterialTheme.typography.titleMedium
+                            )
                             Text(
                                 "Giảm 10.500đ",
-                                color = Color.Red
+                                color = Color.Red,
+                                textAlign = TextAlign.Right,
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
+
                         Button(
                             onClick = { /* Handle checkout */ },
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .padding(vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Gray
+                                containerColor = Color.Red
                             )
                         ) {
                             Text("Thanh toán")
@@ -95,39 +97,39 @@ fun CartScreen(navController: NavController) {
                     }
                 }
 
-                // Bottom navigation
-//                NavigationBar {
-//                    NavigationBarItem(
-//                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-//                        label = { Text("Home") },
-//                        selected = false,
-//                        onClick = { navController.navigate(Screen.Home.route) }
-//                    )
-//                    NavigationBarItem(
-//                        icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
-//                        label = { Text("Tin nhắn") },
-//                        selected = false,
-//                        onClick = { navController.navigate(Screen.Mesage.route) }
-//                    )
-//                    NavigationBarItem(
-//                        icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
-//                        label = { Text("Giỏ Hàng") },
-//                        selected = false,
-//                        onClick = {navController.navigate(Screen.Cart.route) }
-//                    )
-//                    NavigationBarItem(
-//                        icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
-//                        label = { Text("Thông Tin") },
-//                        selected = false,
-//                        onClick = { navController.navigate(Screen.Profile.route) }
-//                    )
-//                    NavigationBarItem(
-//                        icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
-//                        label = { Text("Cài Đặt") },
-//                        selected = false,
-//                        onClick = { navController.navigate(Screen.Setting.route) }
-//                    )
-//                }
+                 ///Bottom navigation
+                NavigationBar {
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("Home") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Home.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
+                        label = { Text("Tin nhắn") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Mesage.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
+                        label = { Text("Giỏ Hàng") },
+                        selected = false,
+                        onClick = {navController.navigate(Screen.Cart.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
+                        label = { Text("Thông Tin") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Profile.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
+                        label = { Text("Cài Đặt") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Setting.route) }
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -188,16 +190,25 @@ fun CartScreen(navController: NavController) {
                                     onClick = { if (soluong > 1) soluong-- },
                                     modifier = Modifier.size(24.dp)
                                 ) {
-                                    Icon(Icons.Filled.KeyboardArrowLeft, "Decrease")
+                                    Text(
+                                        text = "-",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = Color.Black
+                                    )
                                 }
                                 Text(soluong.toString())
                                 IconButton(
                                     onClick = { soluong++ },
                                     modifier = Modifier.size(24.dp)
                                 ) {
-                                    Icon(Icons.Default.Add, "Increase")
+                                    Text(
+                                        text = "+",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = Color.Black
+                                    )
                                 }
                             }
+
                         }
                     }
                 }

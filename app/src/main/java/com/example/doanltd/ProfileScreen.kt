@@ -40,7 +40,7 @@ fun ProfileScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
                     label = { Text("Giỏ Hàng") },
                     selected = false,
-                    onClick = { }
+                    onClick = { navController.navigate(Screen.Cart.route)}
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
