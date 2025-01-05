@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -85,7 +86,7 @@ fun CartScreen(navController: NavController) {
                         }
 
                         Button(
-                            onClick = { /* Handle checkout */ },
+                            onClick = { navController.navigate(Screen.OrderDetails.route) },
                             modifier = Modifier
                                 .padding(vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -114,7 +115,7 @@ fun CartScreen(navController: NavController) {
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
                         label = { Text("Giỏ Hàng") },
-                        selected = false,
+                        selected = true,
                         onClick = {navController.navigate(Screen.Cart.route) }
                     )
                     NavigationBarItem(
@@ -174,9 +175,9 @@ fun CartScreen(navController: NavController) {
                                 )
                                 Text(
                                     "85.000đ",
-//                                    style = MaterialTheme.typography.bodySmall.copy(
-//                                        textDecoration = TextDecoration.LineThrough
-//                                    ),
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        textDecoration = TextDecoration.LineThrough
+                                    ),
                                     color = Color.Gray
                                 )
                             }
