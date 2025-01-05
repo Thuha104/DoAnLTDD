@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,6 +22,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
@@ -46,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doanltd.CartManager.cartItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,83 +144,70 @@ fun CartScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            item {
-                // Cart item
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Product image
-                    Image(
-                        painter = painterResource(id = R.drawable.anh1),
-                        contentDescription = "",
-                        modifier = Modifier.size(80.dp)
-                    )
-
-                    // Product details
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            "[COMBO 6] Bánh Tráng Phơi Sương Sốt Tắc Muối Ruốc Hành Phí",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text("COMBO 6")
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    "65.000đ",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    "85.000đ",
-//                                    style = MaterialTheme.typography.bodySmall.copy(
-//                                        textDecoration = TextDecoration.LineThrough
-//                                    ),
-                                    color = Color.Gray
-                                )
-                            }
-
-                            // Quantity controls
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                IconButton(
-                                    onClick = { if (soluong > 1) soluong-- },
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Text(
-                                        text = "-",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = Color.Black
-                                    )
-                                }
-                                Text(soluong.toString())
-                                IconButton(
-                                    onClick = { soluong++ },
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Text(
-                                        text = "+",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = Color.Black
-                                    )
-                                }
-                            }
-
-                        }
-                    }
-                }
+            items(cartItems) { item ->
+                CartItemComponent(item)
             }
         }
     }
 }
+
+@Composable
+fun CartItemComponent(item: CartItem) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = item.imageRes),
+            contentDescription = item.name,
+            modifier = Modifier.size(80.dp)
+        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                item.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                "${item.price.toInt()}đ",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFFF4B12)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { CartManager.updateQuantity(item.id, item.quantity - 1) },
+                    enabled = item.quantity > 1
+                ) {
+                    Icon(Icons.Default.Remove, contentDescription = "Decrease")
+                }
+                Text(
+                    text = item.quantity.toString(),
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                IconButton(
+                    onClick = { CartManager.updateQuantity(item.id, item.quantity + 1) }
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Increase")
+                }
+            }
+        }
+        IconButton(
+            onClick = { CartManager.removeFromCart(item.id) }
+        ) {
+            Icon(Icons.Default.Delete, contentDescription = "Remove")
+        }
+    }
+}
+
 
 
 

@@ -175,7 +175,7 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(foodItems) { food ->
-                    FoodItem(food)
+                    FoodItem(food, navController)
                 }
             }
         }
@@ -208,10 +208,11 @@ fun CategoryItem(category: Category) {
 }
 
 @Composable
-fun FoodItem(food: FoodItem) {
+fun FoodItem(food: FoodItem, navController: NavController) {
     Card(
         modifier = Modifier.width(160.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        onClick = { navController.navigate(Screen.ProductDetail.route) }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Image(
@@ -251,7 +252,7 @@ fun FoodItem(food: FoodItem) {
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(
-                    onClick = { },
+                    onClick = { navController.navigate(Screen.ProductDetail.route) },
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
@@ -275,6 +276,10 @@ fun FoodItem(food: FoodItem) {
         }
     }
 }
+
+
+
+
 
 data class Category(
     val name: String,
