@@ -28,6 +28,7 @@ fun OrderDetailsScreen(navController: NavController) {
     var deliveryAddress by remember { mutableStateOf("192, Phạm Đức Sơn, Phường 16, Quận 8") }
     var showAddressDialog by remember { mutableStateOf(false) }
     var showResultDialog by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
+    var customerNote by remember { mutableStateOf("") }
 
     if (showAddressDialog) {
         AddressEditDialog(
@@ -202,13 +203,37 @@ fun OrderDetailsScreen(navController: NavController) {
                 }
             }
 
+            // Customer Note
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        "Lời nhắn từ khách hàng:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextField(
+                        value = customerNote,
+                        onValueChange = { customerNote = it },
+                        label = { Text("Nhập lời nhắn...") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
             // Order Button
             Button(
                 onClick = {
                     if (selectedPaymentMethod == null) {
                         showResultDialog = false to "Bạn chưa chọn hình thức thanh toán!"
                     } else {
-                        showResultDialog = true to "Đặt hàng thành công!"
+                        showResultDialog = true to "Đặt hàng thành công! Lời nhắn: $customerNote"
                     }
                 },
                 modifier = Modifier
@@ -289,4 +314,3 @@ fun ResultDialog(isSuccess: Boolean, message: String, onDismiss: () -> Unit) {
         }
     }
 }
-

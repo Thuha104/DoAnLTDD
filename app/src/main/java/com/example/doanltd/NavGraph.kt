@@ -7,6 +7,7 @@ import com.example.doanltd.CartScreen
 import com.example.doanltd.ChatScreen
 import com.example.doanltd.MessageScreen
 import com.example.doanltd.OrderDetailsScreen
+import com.example.doanltd.ProductDetailScreen
 
 
 sealed class Screen(val route: String) {
@@ -19,6 +20,7 @@ sealed class Screen(val route: String) {
     object Setting:Screen("setting")
     object Cart:Screen("cart")
     object OrderDetails : Screen("order_details")
+    object ProductDetail : Screen("productdetail")
 }
 
 @Composable
@@ -52,6 +54,8 @@ fun AuthNavigation() {
         composable(Screen.OrderDetails.route) {
             OrderDetailsScreen(navController)
         }
-
+        composable(Screen.ProductDetail.route) {
+            ProductDetailScreen(navController)
+        }
     }
 }
