@@ -1,3 +1,5 @@
+package com.example.doanltd.Screen
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
 
 @OptIn(ExperimentalMaterial3Api::class)

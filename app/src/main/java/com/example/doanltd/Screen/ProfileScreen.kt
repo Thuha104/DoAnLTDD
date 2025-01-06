@@ -1,5 +1,8 @@
+package com.example.doanltd.Screen
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -14,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,7 +119,49 @@ fun ProfileScreen(navController: NavController) {
                 content = "192, Pham Don Tam, phuong 14, Quan 8",
                 onClick = { }
             )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // New section for Order History and Orders icons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // Order History Icon
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {navController.navigate(Screen.OrderHistory.route)}
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.History,
+                        contentDescription = "Lịch sử đơn hàng",
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Text(
+                        text = "Lịch sử đơn hàng",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                // Orders Icon
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable { /* TODO: Add navigation to orders */ }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingBag,
+                        contentDescription = "Đơn hàng",
+                        modifier = Modifier.size(50.dp)
+                    )
+                    Text(
+                        text = "Đơn hàng",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
         }
+
     }
 }
 

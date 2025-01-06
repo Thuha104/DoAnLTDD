@@ -1,4 +1,4 @@
-package com.example.doanltd
+package com.example.doanltd.Screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.example.doanltd.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
