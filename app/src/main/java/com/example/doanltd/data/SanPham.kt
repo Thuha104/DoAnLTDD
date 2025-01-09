@@ -1,3 +1,5 @@
+package com.example.doanltd.data
+
 data class SanPham(
     val MaSp :String,
     val MaLoai:String,

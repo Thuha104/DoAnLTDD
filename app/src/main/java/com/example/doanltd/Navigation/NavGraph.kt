@@ -66,8 +66,15 @@ fun AuthNavigation() {
         composable(Screen.OrderDetails.route) {
             OrderDetailsScreen(navController)
         }
-        composable(Screen.ProductDetail.route) {
-            ProductDetailScreen(navController)
+//        composable(Screen.ProductDetail.route) {
+//            ProductDetailScreen(navController)
+//        }
+        composable(
+            route = "${Screen.ProductDetail.route}/{id}", // Định nghĩa route với tham số `id`
+            arguments = listOf(navArgument("id") { type = NavType.StringType }) // Khai báo loại của tham số
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") // Lấy giá trị `id`
+            ProductDetailScreen(navController = navController, productId = id)
         }
         composable(Screen.OrderHistory.route) {
             OrderHistoryScreen(navController)

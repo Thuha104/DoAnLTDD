@@ -18,23 +18,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
+import com.example.doanltd.View.SanPhamViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailScreen(navController: NavController) {
-    val product = remember {
-        CartItem(
-            id = "1",
-            name = "[COMBO BÁNH TRÁNG] Bánh Tráng Phơi Sương Sốt Tắc Muối Ruốc Hành Phí",
-            price = 55000.0,
-            imageRes = R.drawable.logo
-        )
-    }
-
+fun ProductDetailScreen(navController: NavController,productId: String?,viewModel: SanPhamViewModel = viewModel()) {
+    val SanPhams by remember { derivedStateOf { viewModel.posts } }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,6 +75,7 @@ fun ProductDetailScreen(navController: NavController) {
             }
         }
     ) { paddingValues ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -92,12 +87,7 @@ fun ProductDetailScreen(navController: NavController) {
                     .fillMaxWidth()
                     .height(300.dp)
             ) {
-                Image(
-                    painter = painterResource(id = product.imageRes),
-                    contentDescription = "Product Image",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+
             }
 
             Column(
@@ -139,7 +129,8 @@ fun ProductDetailScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    product.name,
+                   // product.name,
+                    text = "${productId}",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )

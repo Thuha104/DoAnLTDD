@@ -1,7 +1,8 @@
 package com.example.doanltd.Screen
 
-import SanPham
-import SanPhamViewModel
+import LoaiSP
+import com.example.doanltd.data.SanPham
+import com.example.doanltd.View.SanPhamViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +35,9 @@ import com.example.doanltd.R
 @Composable
 fun HomeScreen(navController: NavController,viewModel: SanPhamViewModel =viewModel()) {
     val SanPhams by remember { derivedStateOf { viewModel.posts } }
+
+    val LoaiSps by remember { derivedStateOf { viewModel.loaisanphams } }
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -144,8 +147,8 @@ fun HomeScreen(navController: NavController,viewModel: SanPhamViewModel =viewMod
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                items(categories) { category ->
-                    CategoryItem(category)
+                items(LoaiSps) { loaisp ->
+                    CategoryItem(loaisp)
                 }
             }
 
@@ -191,7 +194,7 @@ fun HomeScreen(navController: NavController,viewModel: SanPhamViewModel =viewMod
 }
 
 @Composable
-fun CategoryItem(category: Category) {
+fun CategoryItem(loaiSP: LoaiSP) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(60.dp)
@@ -200,14 +203,14 @@ fun CategoryItem(category: Category) {
             modifier = Modifier.size(60.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Image(
-                painter = painterResource(id = category.iconRes),
-                contentDescription = category.name,
-                modifier = Modifier.padding(12.dp)
+            AsyncImage(
+                model = loaiSP.HinhLoai,
+                contentDescription = "Translated description of what the image contains"
             )
+
         }
         Text(
-            text = category.name,
+            text = loaiSP.TenLoai,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(top = 4.dp),
             textAlign = TextAlign.Center
@@ -221,7 +224,7 @@ fun SanPhamItem(sanPham: SanPham, navController: NavController) {
     Card(
         modifier = Modifier.width(160.dp),
         shape = RoundedCornerShape(12.dp),
-        onClick = { navController.navigate(Screen.ProductDetail.route) }
+        onClick = {  navController.navigate("${Screen.ProductDetail.route}/${sanPham.MaSp}")  }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             AsyncImage(
@@ -284,17 +287,4 @@ fun SanPhamItem(sanPham: SanPham, navController: NavController) {
 }
 
 
-data class Category(
-    val name: String,
-    val iconRes: Int
-)
 
-
-
-val categories = listOf(
-    Category("Bánh tráng", R.drawable.logo),
-    Category("Muối", R.drawable.logo),
-    Category("Khô", R.drawable.logo),
-    Category("Đồ đóng gói", R.drawable.logo),
-    Category("Khác", R.drawable.logo)
-)
