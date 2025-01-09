@@ -1,5 +1,7 @@
 package com.example.doanltd.Screen
 
+import SanPham
+import SanPhamViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,13 +25,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController,viewModel: SanPhamViewModel =viewModel()) {
+    val SanPhams by remember { derivedStateOf { viewModel.posts } }
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -177,8 +182,8 @@ fun HomeScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(foodItems) { food ->
-                    FoodItem(food, navController)
+                items(SanPhams){ sanpham ->
+                    SanPhamItem(sanPham = sanpham,navController=navController)
                 }
             }
         }
@@ -211,24 +216,22 @@ fun CategoryItem(category: Category) {
 }
 
 @Composable
-fun FoodItem(food: FoodItem, navController: NavController) {
+fun SanPhamItem(sanPham: SanPham, navController: NavController) {
+
     Card(
         modifier = Modifier.width(160.dp),
         shape = RoundedCornerShape(12.dp),
         onClick = { navController.navigate(Screen.ProductDetail.route) }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Image(
-                painter = painterResource(id = food.imageRes),
-                contentDescription = food.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
+            AsyncImage(
+                model = sanPham.HinhSp,
+                contentDescription = "Translated description of what the image contains"
             )
+
+
             Text(
-                text = food.name,
+                text = sanPham.TenSp,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 4.dp)
@@ -238,7 +241,7 @@ fun FoodItem(food: FoodItem, navController: NavController) {
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(
-                    text = "• ${food.Description}Thơm ngon khó cưỡng",
+                    text = "• ${sanPham.MoTa}Thơm ngon khó cưỡng",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray,
                     modifier = Modifier.padding(start = 4.dp)
@@ -250,7 +253,7 @@ fun FoodItem(food: FoodItem, navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${food.price}VND",
+                    text = "${sanPham.DonGia}VND",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -281,20 +284,12 @@ fun FoodItem(food: FoodItem, navController: NavController) {
 }
 
 
-
-
-
 data class Category(
     val name: String,
     val iconRes: Int
 )
 
-data class FoodItem(
-    val name: String,
-    val Description: String,
-    val price: Double,
-    val imageRes: Int
-)
+
 
 val categories = listOf(
     Category("Bánh tráng", R.drawable.logo),
@@ -302,14 +297,4 @@ val categories = listOf(
     Category("Khô", R.drawable.logo),
     Category("Đồ đóng gói", R.drawable.logo),
     Category("Khác", R.drawable.logo)
-)
-
-val foodItems = listOf(
-    FoodItem("Bánh tráng phơi sương", "", 50.00, R.drawable.logo),
-    FoodItem("Muối nhuyễn", "", 10.00, R.drawable.logo),
-    FoodItem("Muối sặc", "", 10.00, R.drawable.logo),
-    FoodItem("Khô Bò", "", 10.00, R.drawable.logo),
-    FoodItem("Khô Gà", "", 10.00, R.drawable.logo),
-    FoodItem("Cá Viên", "", 10.00, R.drawable.logo),
-    FoodItem("Bò Viên", "", 10.00, R.drawable.logo)
 )
