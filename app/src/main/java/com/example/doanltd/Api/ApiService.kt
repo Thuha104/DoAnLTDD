@@ -13,7 +13,8 @@ interface ApiService{
  suspend fun getLoaiSP():List<LoaiSP>
 
  @GET("sanpham/laySanPhamTheoMaSP.php")
- suspend fun getChiTietSanPham(@Query("id") productId: String): List<SanPham>
+    suspend fun getChiTietSanPham(@Query("id") productId: String): SanPham
+
 }
 
 object RetrofitInstance{

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
 import com.example.doanltd.View.SanPhamViewModel
@@ -27,8 +28,36 @@ import com.example.doanltd.View.SanPhamViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailScreen(navController: NavController,productId: String?,viewModel: SanPhamViewModel = viewModel()) {
-    val SanPhams by remember { derivedStateOf { viewModel.posts } }
+fun ProductDetailScreen(
+    navController: NavController,
+    productId: String?,
+    viewModel: SanPhamViewModel = viewModel()
+) {
+    // Kiểm tra productId có hợp lệ không
+    if (productId == null) {
+        Text("Lỗi: Không có Product ID")
+        return
+    }
+
+    // Lấy thông tin sản phẩm từ ViewModel
+    val product by remember { derivedStateOf { viewModel.productDetail } }
+
+    // Gọi API nếu product chưa có dữ liệu
+    LaunchedEffect(productId) {
+        viewModel.fetchProductDetail(productId)
+    }
+
+    // Nếu dữ liệu chưa tải xong
+    if (product == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -39,43 +68,8 @@ fun ProductDetailScreen(navController: NavController,productId: String?,viewMode
                     }
                 }
             )
-        },
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Home.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
-                    label = { Text("Tin nhắn") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Mesage.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
-                    label = { Text("Giỏ Hàng") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Cart.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
-                    label = { Text("Thông Tin") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Profile.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
-                    label = { Text("Cài Đặt") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Setting.route) }
-                )
-            }
         }
     ) { paddingValues ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -87,7 +81,12 @@ fun ProductDetailScreen(navController: NavController,productId: String?,viewMode
                     .fillMaxWidth()
                     .height(300.dp)
             ) {
-
+                AsyncImage(
+                    model = product!!.HinhSp,  // Ảnh sản phẩm
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
             }
 
             Column(
@@ -102,7 +101,7 @@ fun ProductDetailScreen(navController: NavController,productId: String?,viewMode
                 ) {
                     Column {
                         Text(
-                            "${product.price.toInt()}đ",
+                            "${product!!.DonGia.toInt()}đ",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFFFF4B12)
@@ -129,8 +128,7 @@ fun ProductDetailScreen(navController: NavController,productId: String?,viewMode
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                   // product.name,
-                    text = "${productId}",
+                    product!!.TenSp,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -144,33 +142,23 @@ fun ProductDetailScreen(navController: NavController,productId: String?,viewMode
                 )
 
                 Text(
-                    "• Bánh tráng phơi sương\n" +
-                            "• Sốt tắc\n" +
-                            "• Muối ruốc\n" +
-                            "• Hành phi\n" +
-                            "• Đóng gói cẩn thận\n" +
-                            "• Thơm ngon khó cưỡng",
+                    product!!.MoTa,
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Row(
+                Button(
+                    onClick = {
+                        CartManager.addToCart(product!!)
+                        navController.navigate(Screen.Cart.route)
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF4B12)
+                    )
                 ) {
-                    Button(
-                        onClick = {
-                            CartManager.addToCart(product)
-                            navController.navigate(Screen.Cart.route)
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF4B12)
-                        )
-                    ) {
-                        Text("Thêm vào giỏ hàng")
-                    }
+                    Text("Thêm vào giỏ hàng")
                 }
             }
         }

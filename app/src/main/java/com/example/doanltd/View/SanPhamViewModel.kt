@@ -71,7 +71,7 @@ class SanPhamViewModel :ViewModel(){
     fun fetchProductDetail(productId: String) {
         viewModelScope.launch {
             try {
-                productDetail = RetrofitInstance.api.getChiTietSanPham(productId).firstOrNull()
+                productDetail = RetrofitInstance.api.getChiTietSanPham(productId)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

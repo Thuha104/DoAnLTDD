@@ -3,6 +3,7 @@ package com.example.doanltd.Screen
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.doanltd.data.SanPham
 
 data class CartItem(
     val id: String,
@@ -16,15 +17,15 @@ object CartManager {
     var cartItems by mutableStateOf(listOf<CartItem>())
         private set
 
-    fun addToCart(item: CartItem) {
-        val existingItem = cartItems.find { it.id == item.id }
+    fun addToCart(item: SanPham) {
+        val existingItem = cartItems.find { it.id == item.MaSp }
         if (existingItem != null) {
             cartItems = cartItems.map {
-                if (it.id == item.id) it.copy(quantity = it.quantity + 1)
+                if (it.id == item.MaSp) it.copy(quantity = it.quantity + 1)
                 else it
             }
         } else {
-            cartItems = cartItems + item
+            //cartItems = cartItems + item
         }
     }
 
