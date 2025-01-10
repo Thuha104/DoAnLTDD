@@ -1,5 +1,6 @@
 package com.example.doanltd.Screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,17 +19,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.doanltd.R
+import com.example.doanltd.View.AuthViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var userType by remember { mutableStateOf<String>("") }
+fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewModel()) {
+    var TenNgD by remember { mutableStateOf("") }
+    var TKNgD by remember { mutableStateOf("") }
+    var MatKhauNgD by remember { mutableStateOf("") }
+    var SDT by remember { mutableStateOf("") }
+    val dangKyThanhCong by viewModel.dangKyThanhCong.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -74,6 +83,7 @@ fun RegisterScreen(navController: NavController) {
             )
         }
 
+        // thao tac dang nhap
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -90,8 +100,8 @@ fun RegisterScreen(navController: NavController) {
             )
 
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                value = TenNgD,
+                onValueChange = { TenNgD = it },
                 label = { Text("Họ và Tên") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -106,9 +116,9 @@ fun RegisterScreen(navController: NavController) {
             )
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
+                value = TKNgD,
+                onValueChange = { TKNgD = it },
+                label = { Text("Tên đăng nhập") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
@@ -122,9 +132,9 @@ fun RegisterScreen(navController: NavController) {
             )
 
             OutlinedTextField(
-                value = contact,
-                onValueChange = { contact = it },
-                label = { Text("Địa chỉ") },
+                value = SDT,
+                onValueChange = { SDT = it },
+                label = { Text("Số điện thoại") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
@@ -137,10 +147,11 @@ fun RegisterScreen(navController: NavController) {
                 }
             )
 
+
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
+                value = MatKhauNgD,
+                onValueChange = { MatKhauNgD = it },
+                label = { Text("Mật khẩu") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -168,7 +179,16 @@ fun RegisterScreen(navController: NavController) {
             }
 
             Button(
-                onClick = { /* TODO: Implement registration */ },
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        viewModel.dangKyNguoiDung(
+                            tenNgD = TenNgD,
+                            sdt = SDT,
+                            tkNgD = TKNgD,
+                            matKhauNgD = MatKhauNgD
+                        )
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
@@ -179,5 +199,16 @@ fun RegisterScreen(navController: NavController) {
             }
         }
     }
-}
+        // ⬇️ Đặt LaunchedEffect bên ngoài Column ⬇️
+        LaunchedEffect(dangKyThanhCong) {
+            dangKyThanhCong?.let {
+                if (it) {
+                    Toast.makeText( context,"Đăng ký thành công!", Toast.LENGTH_SHORT).show()
+                    navController.navigate("login") // Chuyển về màn hình đăng nhập
+                } else {
+                    Toast.makeText(context,"Đăng ký thất bại!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 

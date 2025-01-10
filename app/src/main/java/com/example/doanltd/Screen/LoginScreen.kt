@@ -1,5 +1,7 @@
 package com.example.doanltd.Screen
 
+import NgDung
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,14 +24,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
+import com.example.doanltd.View.AuthViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var userType by remember { mutableStateOf<String>("") }
+fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.lifecycle.viewmodel.compose.viewModel()) {
+    var TKNgD by remember { mutableStateOf("") }
+    var MatKhauNgD by remember { mutableStateOf("") }
+    val dangNhapThanhCong by viewModel.dangNhapThanhCong.collectAsState()
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,8 +98,8 @@ fun LoginScreen(navController: NavController) {
             )
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = TKNgD,
+                onValueChange = { TKNgD = it },
                 label = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -106,8 +114,8 @@ fun LoginScreen(navController: NavController) {
             )
 
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = MatKhauNgD,
+                onValueChange = { MatKhauNgD = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
@@ -144,41 +152,13 @@ fun LoginScreen(navController: NavController) {
                 )
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { userType = if (userType != "NguoiDung") "NguoiDung" else "" }
-                ) {
-                    Checkbox(
-                        checked = userType == "NguoiDung",
-                        onCheckedChange = { userType = if (it) "NguoiDung" else "" },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFFFF4B12))
-                    )
-                    Text("Người Dùng")
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { userType = if (userType != "NhanVien") "NhanVien" else "" }
-                ) {
-                    Checkbox(
-                        checked = userType == "NhanVien",
-                        onCheckedChange = { userType = if (it) "NhanVien" else "" },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFFFF4B12))
-                    )
-                    Text("Nhân Viên")
-                }
-            }
-
-
             Button(
-                onClick = { navController.navigate(Screen.Home.route) },
+                onClick = { CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.dangNhapNguoiDung(
+                        tkNgD = TKNgD,
+                        matKhauNgD = MatKhauNgD
+                    )
+                } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
@@ -186,6 +166,17 @@ fun LoginScreen(navController: NavController) {
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text("ĐĂNG NHẬP", color = Color.White)
+            }
+        }
+    }
+    // ⬇️ Đặt LaunchedEffect bên ngoài Column ⬇️
+    LaunchedEffect(dangNhapThanhCong) {
+        dangNhapThanhCong?.let {
+            if (it) {
+                Toast.makeText( context,"Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
+                navController.navigate("home") // Chuyển về màn hình đăng nhập
+            } else {
+                Toast.makeText(context,"Đăng nhập thất bại!", Toast.LENGTH_SHORT).show()
             }
         }
     }
