@@ -100,7 +100,7 @@ fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.
             OutlinedTextField(
                 value = TKNgD,
                 onValueChange = { TKNgD = it },
-                label = { Text("Email") },
+                label = { Text("Tên đăng nhập") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
@@ -142,7 +142,7 @@ fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.
                 modifier = Modifier.padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Bạn chưa có tài khoản")
+                Text("Bạn chưa có tài khoản? ")
                 Text(
                     "Đăng ký ngay",
                     color = Color(0xFFFF4B12),
