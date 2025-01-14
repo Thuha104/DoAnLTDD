@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.doanltd.Screen.CategoryScreen
 import com.example.doanltd.Screen.ChatScreen
 import com.example.doanltd.Screen.HomeScreen
 import com.example.doanltd.Screen.LoginScreen
@@ -38,6 +39,9 @@ sealed class Screen(val route: String) {
     object ProductDetail : Screen("productdetail")
     object OrderHistory : Screen("order_history")
     object Review : Screen("review/{productId}")
+    object CategoryScreen:Screen("category/{categoryId}"){
+        fun createRoute(categoryId: String): String = "category/$categoryId"
+    }
 }
 
 @Composable
@@ -90,6 +94,16 @@ fun AuthNavigation() {
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")
             ReviewScreen(navController, productId)
+        }
+        composable(
+            route = Screen.CategoryScreen.route,
+            arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId")
+            CategoryScreen(
+                navController = navController,
+                categoryId = categoryId
+            )
         }
     }
 }

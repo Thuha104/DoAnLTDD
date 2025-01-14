@@ -5,6 +5,7 @@ import com.example.doanltd.data.SanPham
 import com.example.doanltd.View.SanPhamViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -25,11 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.Navigation.Screen
+import com.example.doanltd.Navigation.Screen.CategoryScreen
 import com.example.doanltd.R
 import java.text.NumberFormat
 import java.util.*
@@ -168,6 +171,7 @@ fun HomeScreen(navController: NavController, viewModel: SanPhamViewModel = viewM
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 8.dp)
+
             )
 
             LazyRow(
@@ -175,7 +179,7 @@ fun HomeScreen(navController: NavController, viewModel: SanPhamViewModel = viewM
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 items(loaiSps) { loaiSp ->
-                    CategoryItem(loaiSp)
+                    CategoryItem(loaiSP = loaiSp, navController = navController)
                 }
             }
 
@@ -195,25 +199,41 @@ fun HomeScreen(navController: NavController, viewModel: SanPhamViewModel = viewM
 }
 
 @Composable
-fun CategoryItem(loaiSP: LoaiSP) {
+fun CategoryItem(loaiSP: LoaiSP, navController: NavController) {
+    val maLoai = loaiSP.MaLoai ?: return
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(60.dp)
+        modifier = Modifier
+            .width(60.dp)
+            .clickable {
+                navController.navigate(CategoryScreen.createRoute(maLoai))
+            }
     ) {
         Card(
             modifier = Modifier.size(60.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
-            AsyncImage(
-                model = loaiSP.HinhLoai,
-                contentDescription = null
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = loaiSP.HinhLoai,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
         }
         Text(
             text = loaiSP.TenLoai,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(top = 4.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -252,3 +272,4 @@ fun SanPhamItem(sanPham: SanPham, navController: NavController) {
         }
     }
 }
+
