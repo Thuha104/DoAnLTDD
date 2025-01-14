@@ -1,6 +1,6 @@
 package com.example.doanltd.Screen
 
-import androidx.compose.foundation.Image
+import CartItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -22,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.Navigation.Screen
-import com.example.doanltd.R
 import com.example.doanltd.View.SanPhamViewModel
 
 
@@ -150,16 +148,24 @@ fun ProductDetailScreen(
 
                 Button(
                     onClick = {
-                        CartManager.addToCart(product!!)
+                        // Add the product to the cart
+                        CartManager.addToCart(
+                            CartItem(
+                                id = product!!.MaSp,
+                                name = product!!.TenSp,
+                                price = product!!.DonGia,
+                                imageUrl = product!!.HinhSp
+                            )
+                        )
+                        // Navigate to the cart screen
                         navController.navigate(Screen.Cart.route)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF4B12)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
                 ) {
                     Text("Thêm vào giỏ hàng")
                 }
+
             }
         }
     }
