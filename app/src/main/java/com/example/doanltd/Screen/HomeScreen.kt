@@ -64,42 +64,42 @@ fun HomeScreen(navController: NavController, viewModel: SanPhamViewModel = viewM
                 normalize(it.MoTa).contains(normalize(searchQuery))
     }
 
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") },
-                    selected = true,
-                    onClick = { resetHome = true }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
-                    label = { Text("Tin nhắn") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Message.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
-                    label = { Text("Giỏ Hàng") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Cart.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
-                    label = { Text("Thông Tin") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Profile.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
-                    label = { Text("Cài Đặt") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Setting.route) }
-                )
+        Scaffold(
+            bottomBar = {
+                NavigationBar {
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("Home") },
+                        selected = true,
+                        onClick = { resetHome = true }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
+                        label = { Text("Tin nhắn") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Message.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
+                        label = { Text("Giỏ Hàng") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Cart.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
+                        label = { Text("Thông Tin") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Profile.route) }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
+                        label = { Text("Cài Đặt") },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Setting.route) }
+                    )
+                }
             }
-        }
-    ) { paddingValues ->
+        ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

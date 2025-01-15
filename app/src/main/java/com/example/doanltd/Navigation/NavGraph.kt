@@ -9,15 +9,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-<<<<<<< HEAD
+import com.example.doanltd.CartItem
 import com.example.doanltd.Screen.*
-=======
 import com.example.doanltd.Screen.CategoryScreen
 import com.example.doanltd.Screen.ChatScreen
 import com.example.doanltd.Screen.HomeScreen
 import com.example.doanltd.Screen.LoginScreen
 import com.example.doanltd.Screen.MessageScreen
-import com.example.doanltd.Screen.OrderDetailsScreen
 import com.example.doanltd.Screen.OrderHistoryScreen
 import com.example.doanltd.Screen.ProductDetailScreen
 import com.example.doanltd.Screen.ProfileScreen
@@ -26,8 +24,6 @@ import com.example.doanltd.Screen.ReviewScreen
 import com.example.doanltd.Screen.SettingScreen
 import com.google.gson.Gson
 
-
->>>>>>> 5bede1b5ac25d7834aedc76210385aafb2ba8243
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -80,6 +76,7 @@ fun AuthNavigation() {
         composable(Screen.OrderDetails.route) {
             OrderDetailsScreen(navController = navController)
         }
+
         composable(
             route = "${Screen.ProductDetail.route}/{id}",
             arguments = listOf(navArgument("id") { type = NavType.StringType })
@@ -109,3 +106,4 @@ fun AuthNavigation() {
         }
     }
 }
+

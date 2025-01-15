@@ -1,6 +1,7 @@
 package com.example.doanltd.data
 
 data class SanPham(
+    val id:Int,
     val MaSp :String,
     val MaLoai:String,
     val TenSp:String,

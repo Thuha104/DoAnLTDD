@@ -21,9 +21,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
+import com.example.doanltd.CartItem
 import com.example.doanltd.CartItemEntity
+import com.example.doanltd.CartManager
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.View.SanPhamViewModel
+import com.example.doanltd.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -149,17 +152,36 @@ fun ProductDetailScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+//                    Button(
+//                        onClick = {
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                AppDatabase.getDatabase(context).cartDao().insertCartItem(
+//                                    CartItemEntity(
+//                                        name = product!!.TenSp,
+//                                        price = product!!.DonGia,
+//                                        quantity = 1,
+//                                        imageUrl = product!!.HinhSp
+//                                    )
+//                                )
+//                            }
+//                            navController.navigate(Screen.Cart.route)
+//                        },
+//                        modifier = Modifier.fillMaxWidth(),
+//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
+//                    ) {
+//                        Text("Thêm vào giỏ hàng")
+//                    }
                     Button(
                         onClick = {
+                            val cartItem = CartItem(
+                                id = product!!.id, // Assuming the product has an id field
+                                name = product!!.TenSp,
+                                price = product!!.DonGia,
+                                quantity = 1,
+                                imageUrl = product!!.HinhSp
+                            )
                             CoroutineScope(Dispatchers.IO).launch {
-                                AppDatabase.getDatabase(context).cartDao().insertCartItem(
-                                    CartItemEntity(
-                                        name = product!!.TenSp,
-                                        price = product!!.DonGia,
-                                        quantity = 1,
-                                        imageUrl = product!!.HinhSp
-                                    )
-                                )
+                                CartManager(context).addToCart(cartItem)
                             }
                             navController.navigate(Screen.Cart.route)
                         },
@@ -173,3 +195,4 @@ fun ProductDetailScreen(
     }
 }
 }
+

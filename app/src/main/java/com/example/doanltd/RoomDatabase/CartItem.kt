@@ -1,5 +1,9 @@
 package com.example.doanltd
 
+
+
+
+
 data class CartItem(
     val id: Int,
     val name: String,
@@ -7,6 +11,7 @@ data class CartItem(
     val quantity: Int,
     val imageUrl: String
 )
+
 fun CartItemEntity.toCartItem(): CartItem {
     return CartItem(
         id = id,
@@ -19,10 +24,14 @@ fun CartItemEntity.toCartItem(): CartItem {
 
 fun CartItem.toEntity(): CartItemEntity {
     return CartItemEntity(
-        id = id,
+        //id = id,
+        id =id,
         name = name,
         price = price,
         quantity = quantity,
         imageUrl = imageUrl
     )
 }
+
+
+
