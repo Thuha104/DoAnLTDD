@@ -1,39 +1,25 @@
 package com.example.doanltd.Navigation
 
-import CartItem
-import CartScreen
-import android.util.Log
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.doanltd.Screen.ChatScreen
-import com.example.doanltd.Screen.HomeScreen
-import com.example.doanltd.Screen.LoginScreen
-import com.example.doanltd.Screen.MessageScreen
-import com.example.doanltd.Screen.OrderDetailsScreen
-import com.example.doanltd.Screen.OrderHistoryScreen
-import com.example.doanltd.Screen.ProductDetailScreen
-import com.example.doanltd.Screen.ProfileScreen
-import com.example.doanltd.Screen.RegisterScreen
-import com.example.doanltd.Screen.ReviewScreen
-import com.example.doanltd.Screen.SettingScreen
-import com.google.gson.Gson
-
-
+import com.example.doanltd.Screen.*
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Home : Screen("home")
     object Profile : Screen("profile")
-    object Mesage: Screen("message")
-    object Chat: Screen("chat")
-    object Setting: Screen("setting")
-    object Cart: Screen("cart")
+    object Message : Screen("message")
+    object Chat : Screen("chat")
+    object Setting : Screen("setting")
+    object Cart : Screen("cart")
     object OrderDetails : Screen("order_details")
     object ProductDetail : Screen("productdetail")
     object OrderHistory : Screen("order_history")
@@ -43,53 +29,52 @@ sealed class Screen(val route: String) {
 @Composable
 fun AuthNavigation() {
     val navController = rememberNavController()
+    val context = LocalContext.current // Lấy context tại đây để truyền vào nếu cần
+
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) {
-            LoginScreen(navController)
+            LoginScreen(navController = navController)
         }
         composable(Screen.Register.route) {
-            RegisterScreen(navController)
+            RegisterScreen(navController = navController)
         }
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController = navController)
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(navController)
+            ProfileScreen(navController = navController)
         }
-        composable(Screen.Mesage.route) {
-            MessageScreen(navController)
+        composable(Screen.Message.route) {
+            MessageScreen(navController = navController)
         }
         composable(Screen.Chat.route) {
-            ChatScreen(navController)
+            ChatScreen(navController = navController)
         }
         composable(Screen.Setting.route) {
-            SettingScreen(navController)
+            SettingScreen(navController = navController)
         }
-        composable(Screen.Cart.route){
-            CartScreen(navController)
+        composable(Screen.Cart.route) {
+            CartScreen(navController = navController)
         }
         composable(Screen.OrderDetails.route) {
-            OrderDetailsScreen(navController)
+            OrderDetailsScreen(navController = navController)
         }
-//        composable(Screen.ProductDetail.route) {
-//            ProductDetailScreen(navController)
-//        }
         composable(
-            route = "${Screen.ProductDetail.route}/{id}", // Định nghĩa route với tham số `id`
-            arguments = listOf(navArgument("id") { type = NavType.StringType }) // Khai báo loại của tham số
+            route = "${Screen.ProductDetail.route}/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id") // Lấy giá trị `id`
-            ProductDetailScreen(navController = navController, productId = id)
+            val id = backStackEntry.arguments?.getString("id")
+            ProductDetailScreen(navController = navController, productId = id, context = context)
         }
         composable(Screen.OrderHistory.route) {
-            OrderHistoryScreen(navController)
+            OrderHistoryScreen(navController = navController)
         }
         composable(
             route = Screen.Review.route,
             arguments = listOf(navArgument("productId") { type = NavType.StringType })
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")
-            ReviewScreen(navController, productId)
+            ReviewScreen(navController = navController, productId = productId)
         }
     }
 }

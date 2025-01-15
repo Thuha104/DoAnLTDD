@@ -49,7 +49,7 @@ fun MessageScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
                     label = { Text("Tin nhắn") },
                     selected = true,
-                    onClick = {navController.navigate(Screen.Mesage.route) }
+                    onClick = {navController.navigate(Screen.Message.route) }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },

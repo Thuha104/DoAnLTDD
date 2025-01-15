@@ -1,6 +1,6 @@
 package com.example.doanltd.Screen
 
-import CartItem
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,8 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.doanltd.AppDatabase
+import com.example.doanltd.CartItemEntity
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.View.SanPhamViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +34,8 @@ import com.example.doanltd.View.SanPhamViewModel
 fun ProductDetailScreen(
     navController: NavController,
     productId: String?,
-    viewModel: SanPhamViewModel = viewModel()
+    context: Context,
+    sanPhamViewModel: SanPhamViewModel = viewModel()
 ) {
     // Kiểm tra productId có hợp lệ không
     if (productId == null) {
@@ -37,15 +43,12 @@ fun ProductDetailScreen(
         return
     }
 
-    // Lấy thông tin sản phẩm từ ViewModel
-    val product by remember { derivedStateOf { viewModel.productDetail } }
+    val product by remember { derivedStateOf { sanPhamViewModel.productDetail } }
 
-    // Gọi API nếu product chưa có dữ liệu
     LaunchedEffect(productId) {
-        viewModel.fetchProductDetail(productId)
+        sanPhamViewModel.fetchProductDetail(productId)
     }
 
-    // Nếu dữ liệu chưa tải xong
     if (product == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -74,99 +77,99 @@ fun ProductDetailScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-            ) {
-                AsyncImage(
-                    model = product!!.HinhSp,  // Ảnh sản phẩm
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
                 ) {
-                    Column {
-                        Text(
-                            "${product!!.DonGia.toInt()}đ",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF4B12)
-                        )
-                        Text(
-                            "Giá gốc: 100.000đ",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textDecoration = TextDecoration.LineThrough,
-                            color = Color.Gray
-                        )
-                    }
-                    Text(
-                        "-25%",
-                        modifier = Modifier
-                            .background(
-                                color = Color(0xFFFF4B12),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = Color.White
+                    AsyncImage(
+                        model = product!!.HinhSp,  // Ảnh sản phẩm
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    product!!.TenSp,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    "Mô tả sản phẩm:",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    product!!.MoTa,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    onClick = {
-                        // Add the product to the cart
-                        CartManager.addToCart(
-                            CartItem(
-                                id = product!!.MaSp,
-                                name = product!!.TenSp,
-                                price = product!!.DonGia,
-                                imageUrl = product!!.HinhSp
-                            )
-                        )
-                        // Navigate to the cart screen
-                        navController.navigate(Screen.Cart.route)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Text("Thêm vào giỏ hàng")
-                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                "${product!!.DonGia.toInt()}đ",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFF4B12)
+                            )
+                            Text(
+                                "Giá gốc: 100.000đ",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = Color.Gray
+                            )
+                        }
+                        Text(
+                            "-25%",
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFFFF4B12),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = Color.White
+                        )
+                    }
 
-            }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        product!!.TenSp,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        "Mô tả sản phẩm:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        product!!.MoTa,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                AppDatabase.getDatabase(context).cartDao().insertCartItem(
+                                    CartItemEntity(
+                                        name = product!!.TenSp,
+                                        price = product!!.DonGia,
+                                        quantity = 1,
+                                        imageUrl = product!!.HinhSp
+                                    )
+                                )
+                            }
+                            navController.navigate(Screen.Cart.route)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
+                    ) {
+                        Text("Thêm vào giỏ hàng")
+                    }
+
         }
     }
+}
 }
