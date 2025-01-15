@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+<<<<<<< HEAD
 import androidx.room.Update
 
 //@Dao
@@ -24,6 +25,9 @@ import androidx.room.Update
 //
 //
 //}
+=======
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
+>>>>>>> d7dd8f80d2a134ac95f41b9bb40b3f168decfc9a
 
 @Dao
 interface CartDao {

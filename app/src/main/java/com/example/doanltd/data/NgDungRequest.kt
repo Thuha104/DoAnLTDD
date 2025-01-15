@@ -1,3 +1,4 @@
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 import com.google.gson.annotations.SerializedName
 
 // Dùng cho đăng ký
@@ -23,5 +24,5 @@ data class RegisterResponse(
 // phản hồi từ server login
 data class LoginReponse(
     val status: Boolean,
-    val user:NgDung
+    val user:NgDungEntity
 )

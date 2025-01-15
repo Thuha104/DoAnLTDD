@@ -13,16 +13,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doanltd.AppDatabase
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
+    var user by remember { mutableStateOf<NgDungEntity?>(null) }
+    val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context).ngDungDao()
+
+    LaunchedEffect(Unit) {
+        // Di chuyển việc truy vấn vào coroutine
+        CoroutineScope(Dispatchers.IO).launch {
+            val userList = db.getAll()
+            if (userList.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                    user = userList[0]
+                }
+            }
+        }
+    }
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -104,19 +127,19 @@ fun ProfileScreen(navController: NavController) {
             // Information Section
             ProfileSection(
                 title = "Thông tin liên hệ",
-                content = "email123@email.com\n+84556487716",
+                content = "${user?.Email}",
                 onClick = { }
             )
 
             ProfileSection(
-                title = "Chức vụ",
-                content = "Quản lý",
+                title = "Số điện thoại",
+                content = "${user?.SDT}",
                 onClick = { }
             )
 
             ProfileSection(
-                title = "Địa chỉ",
-                content = "192, Pham Don Tam, phuong 14, Quan 8",
+                title = "Họ và tên",
+                content = "${user?.TenNgD}",
                 onClick = { }
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -147,7 +170,7 @@ fun ProfileScreen(navController: NavController) {
                 // Orders Icon
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { /* TODO: Add navigation to orders */ }
+                    modifier = Modifier.clickable { navController.navigate(Screen.XemDonHang.route)}
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingBag,

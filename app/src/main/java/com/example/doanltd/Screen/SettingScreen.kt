@@ -7,14 +7,36 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doanltd.AppDatabase
 import com.example.doanltd.Navigation.Screen
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(navController: NavController) {
     var isDarkMode by remember { mutableStateOf(false) } // Quản lý trạng thái giao diện
+    val context = LocalContext.current
+    var user by remember { mutableStateOf<NgDungEntity?>(null) }
+    val db = AppDatabase.getDatabase(context).ngDungDao()
+
+    LaunchedEffect(Unit) {
+        // Di chuyển việc truy vấn vào coroutine
+        CoroutineScope(Dispatchers.IO).launch {
+            val userList = db.getAll()
+            if (userList.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                     user = userList[0]
+                }
+            }
+        }
+    }
 
     // Cập nhật MaterialTheme với chế độ sáng/tối
     MaterialTheme(
@@ -110,6 +132,7 @@ fun SettingScreen(navController: NavController) {
                 Button(
                     onClick = {
                         navController.navigate(Screen.Login.route) {
+                            CoroutineScope(Dispatchers.IO).launch { user?.let { db.delete(it) } }
                             popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     },

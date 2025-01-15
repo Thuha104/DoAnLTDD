@@ -22,12 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.doanltd.AppDatabase
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
 import com.example.doanltd.View.AuthViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +38,31 @@ fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.
     var TKNgD by remember { mutableStateOf("") }
     var MatKhauNgD by remember { mutableStateOf("") }
     val dangNhapThanhCong by viewModel.dangNhapThanhCong.collectAsState()
+    val dulieunguoidung by viewModel.duLieuNguoiDung.collectAsState()
     val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context).ngDungDao()
+
+//    val isChecked = remember { mutableStateOf(false) }
+//
+//    LaunchedEffect(isChecked.value) {
+//        if (!isChecked.value) {
+//            // Di chuyển việc truy vấn vào coroutine
+//            CoroutineScope(Dispatchers.IO).launch {
+//                val userList = db.getAll()
+//                if (userList.isNotEmpty()) {
+//                    withContext(Dispatchers.Main) {
+//                        navController.navigate("home") // Chuyển về màn hình home
+//                    }
+//                } else {
+//                    withContext(Dispatchers.Main) {
+//                        navController.navigate("login") // Chuyển về màn hình đăng nhập
+//                    }
+//                }
+//            }
+//            isChecked.value = true // Đánh dấu đã kiểm tra xong, không chạy lại nữa
+//        }
+//    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,8 +199,27 @@ fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.
     LaunchedEffect(dangNhapThanhCong) {
         dangNhapThanhCong?.let {
             if (it) {
+                dulieunguoidung?.let { user ->
+                    db.insertUserByFields(
+                        user.MaNgD,
+                        user.TenNgD,
+                        user.Email,
+                        user.SDT,
+                        user.TKNgD,
+                        user.TrangThai,
+                        user.ChucVu
+                    )
+                    if(user.ChucVu.equals("NguoiDung"))
+                    {
+                        navController.navigate("home")
+                    }
+                    else
+                    {
+                        navController.navigate("admin")
+                    }
+                }
+
                 Toast.makeText( context,"Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
-                navController.navigate("home") // Chuyển về màn hình đăng nhập
             } else {
                 Toast.makeText(context,"Đăng nhập thất bại!", Toast.LENGTH_SHORT).show()
             }
