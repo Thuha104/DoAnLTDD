@@ -1,14 +1,18 @@
 package com.example.doanltd
 
+
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 
-@Database(entities = [CartItemEntity::class], version = 1, exportSchema = false)
+@Database(entities = [CartItemEntity::class, NgDungEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun cartDao(): CartDao
 
+    abstract fun ngDungDao(): NgDungDao
+    abstract fun cartDao(): CartDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -19,7 +23,10 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Avoid crash on schema updates
+                    .build()
+
                 INSTANCE = instance
                 instance
             }

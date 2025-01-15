@@ -1,5 +1,7 @@
 package com.example.doanltd
 
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
+
 data class CartItem(
     val id: Int,
     val name: String,

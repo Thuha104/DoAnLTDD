@@ -1,4 +1,4 @@
-package com.example.doanltd
+package com.example.doanltd.RoomDatabase.CartRoom
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

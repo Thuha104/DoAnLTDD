@@ -6,6 +6,7 @@ import NgDung
 import RegisterRequest
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -29,15 +30,15 @@ class AuthViewModel : ViewModel(){
     private  val _dangNhapThanhCong=MutableStateFlow<Boolean?>(null)
     val dangNhapThanhCong:StateFlow<Boolean?> = _dangNhapThanhCong
 
-    private  val _duLieuNguoiDung=MutableStateFlow<NgDung?>(null)
-    val duLieuNguoiDung:StateFlow<NgDung?> = _duLieuNguoiDung
+    private  val _duLieuNguoiDung=MutableStateFlow<NgDungEntity?>(null)
+    val duLieuNguoiDung:StateFlow<NgDungEntity?> = _duLieuNguoiDung
 
     suspend fun dangNhapNguoiDung( tkNgD: String, matKhauNgD: String) {
         try {
             val response = apiService.dangnhap(LoginRequest(tkNgD, matKhauNgD))
             Log.d("API", "Đăng nhap thành công: ${response}")
             _dangNhapThanhCong.value=response.status
-            _duLieuNguoiDung.value=response.user
+            _duLieuNguoiDung.value= response.user
         } catch (e: Exception) {
             Log.e("API", "Lỗi đăng nhap: ${e.message}")
         }

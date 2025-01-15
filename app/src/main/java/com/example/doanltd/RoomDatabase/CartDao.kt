@@ -3,6 +3,7 @@ package com.example.doanltd
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
 
 @Dao
 interface CartDao {

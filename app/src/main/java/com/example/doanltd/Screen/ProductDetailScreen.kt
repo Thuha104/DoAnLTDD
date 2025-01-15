@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
-import com.example.doanltd.CartItemEntity
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.View.SanPhamViewModel
 import kotlinx.coroutines.CoroutineScope
