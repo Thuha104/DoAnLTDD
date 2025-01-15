@@ -27,8 +27,8 @@ import androidx.room.Update
 
 @Dao
 interface CartDao {
-    @Query("SELECT * FROM cart_items WHERE id = :id LIMIT 1")
-    suspend fun getCartItemById(id: Int): CartItemEntity?
+    @Query("SELECT * FROM cart_items WHERE MaSp=:MaSp")
+    suspend fun getCartItemById(MaSp: String): CartItemEntity?
 
     @Query("SELECT * FROM cart_items")
     suspend fun getAllCartItems(): List<CartItemEntity>

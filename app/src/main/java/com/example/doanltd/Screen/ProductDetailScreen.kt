@@ -21,12 +21,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
-import com.example.doanltd.CartItem
 import com.example.doanltd.CartItemEntity
 import com.example.doanltd.CartManager
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.View.SanPhamViewModel
-import com.example.doanltd.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -173,8 +171,8 @@ fun ProductDetailScreen(
 //                    }
                     Button(
                         onClick = {
-                            val cartItem = CartItem(
-                                id = product!!.id, // Assuming the product has an id field
+                            val cartItem = CartItemEntity(
+                                MaSp = product!!.MaSp,
                                 name = product!!.TenSp,
                                 price = product!!.DonGia,
                                 quantity = 1,

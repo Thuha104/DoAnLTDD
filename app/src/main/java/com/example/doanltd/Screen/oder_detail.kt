@@ -38,10 +38,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
-import com.example.doanltd.CartItem
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
-import com.example.doanltd.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

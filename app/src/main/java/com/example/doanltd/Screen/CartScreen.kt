@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.doanltd.AppDatabase
-import com.example.doanltd.CartItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,10 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.CartDao
+import com.example.doanltd.CartItemEntity
 import com.example.doanltd.CartManager
 import com.example.doanltd.Navigation.Screen
-import com.example.doanltd.toCartItem
-import com.example.doanltd.toEntity
 import kotlinx.coroutines.launch
 
 
@@ -55,33 +53,33 @@ fun CartScreen(navController: NavHostController) {
     val context = LocalContext.current
     val db = remember { AppDatabase.getDatabase(context) }
     val cartDao = remember { db.cartDao() }
-    val cartItems = remember { mutableStateOf<List<CartItem>>(emptyList()) }
+    val cartItems = remember { mutableStateOf<List<CartItemEntity>>(emptyList()) }
     val totalAmount = remember { mutableStateOf(0.0) }
 
     // Lấy danh sách sản phẩm từ cơ sở dữ liệu
     LaunchedEffect(Unit) {
-        val items = cartDao.getAllCartItems().map { it.toCartItem() }
+        val items = cartDao.getAllCartItems()
         cartItems.value = items
         totalAmount.value = items.sumOf { it.price * it.quantity }
     }
 
-    fun updateCartItem(cartItem: CartItem, newQuantity: Int) {
+    fun updateCartItem(cartItem: CartItemEntity, newQuantity: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             if (newQuantity > 0) {
-                cartDao.updateCartItem(cartItem.copy(quantity = newQuantity).toEntity())
+                cartDao.updateCartItem(cartItem.copy(quantity = newQuantity))
             } else {
-                cartDao.deleteCartItem(cartItem.toEntity())
+                cartDao.deleteCartItem(cartItem)
             }
-            val items = cartDao.getAllCartItems().map { it.toCartItem() }
+            val items = cartDao.getAllCartItems()
             cartItems.value = items
             totalAmount.value = items.sumOf { it.price * it.quantity }
         }
     }
 
-    fun deleteCartItem(cartItem: CartItem) {
+    fun deleteCartItem(cartItem: CartItemEntity) {
         CoroutineScope(Dispatchers.IO).launch {
-            cartDao.deleteCartItem(cartItem.toEntity())
-            val items = cartDao.getAllCartItems().map { it.toCartItem() }
+            cartDao.deleteCartItem(cartItem)
+            val items = cartDao.getAllCartItems()
             cartItems.value = items
             totalAmount.value = items.sumOf { it.price * it.quantity }
         }
@@ -97,16 +95,10 @@ fun CartScreen(navController: NavHostController) {
                     onClick = { navController.navigate(Screen.Home.route) }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
-                    label = { Text("Tin nhắn") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Message.route) }
-                )
-                NavigationBarItem(
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
                     label = { Text("Giỏ Hàng") },
-                    selected = true, // Hiện tại đang chọn Giỏ hàng
-                    onClick = { /* Không cần điều hướng */ }
+                    selected = true,
+                    onClick = {}
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
@@ -114,56 +106,37 @@ fun CartScreen(navController: NavHostController) {
                     selected = false,
                     onClick = { navController.navigate(Screen.Profile.route) }
                 )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
-                    label = { Text("Cài Đặt") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Setting.route) }
-                )
             }
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Đảm bảo nội dung không bị che bởi bottom bar
+                .padding(innerPadding)
         ) {
-            // Nội dung của giỏ hàng
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Text(
+                text = "Giỏ hàng",
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(16.dp)
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Trở về"
-                    )
-                }
-                Text(
-                    text = "Giỏ hàng",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
+                    .align(Alignment.CenterHorizontally)
+            )
+
             if (cartItems.value.isEmpty()) {
                 Text(
                     text = "Giỏ hàng của bạn trống",
-                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        .fillMaxSize()
+                        .wrapContentHeight(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center
                 )
             } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
+                LazyColumn(modifier = Modifier.weight(1f)) {
                     items(cartItems.value) { cartItem ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                                .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AsyncImage(
@@ -174,67 +147,52 @@ fun CartScreen(navController: NavHostController) {
                             )
                             Column(
                                 modifier = Modifier
-                                    .padding(start = 16.dp)
                                     .weight(1f)
+                                    .padding(start = 16.dp)
                             ) {
-                                Text(text = "Tên sản phẩm: ${cartItem.name}")
+                                Text(text = cartItem.name, fontWeight = FontWeight.Bold)
                                 Text(text = "Giá: ${cartItem.price} VND")
                                 Text(text = "Số lượng: ${cartItem.quantity}")
                             }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(onClick = {
-                                    if (cartItem.quantity > 1) {
-                                        updateCartItem(cartItem, cartItem.quantity - 1)
-                                    }
-                                }) {
-                                    Icon(Icons.Filled.Remove, contentDescription = "Giảm số lượng")
-                                }
-                                IconButton(onClick = {
-                                    updateCartItem(cartItem, cartItem.quantity + 1)
-                                }) {
-                                    Icon(Icons.Filled.Add, contentDescription = "Tăng số lượng")
-                                }
-                                IconButton(onClick = {
-                                    deleteCartItem(cartItem)
-                                }) {
-                                    Icon(
-                                        Icons.Filled.Delete,
-                                        contentDescription = "Xóa sản phẩm",
-                                        tint = Color.Red
-                                    )
-                                }
+                            IconButton(onClick = {
+                                updateCartItem(cartItem, cartItem.quantity - 1)
+                            }) {
+                                Icon(Icons.Default.Remove, contentDescription = "Giảm số lượng")
+                            }
+                            IconButton(onClick = {
+                                updateCartItem(cartItem, cartItem.quantity + 1)
+                            }) {
+                                Icon(Icons.Default.Add, contentDescription = "Tăng số lượng")
+                            }
+                            IconButton(onClick = {
+                                deleteCartItem(cartItem)
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Xóa sản phẩm", tint = Color.Red)
                             }
                         }
                     }
                 }
-
-                Row(
+                Text(
+                    text = "Tổng tiền: ${totalAmount.value} VND",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Tổng tiền: ${totalAmount.value} VND",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-
+                        .padding(16.dp),
+                    color = Color.Red,
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Button(
                     onClick = { navController.navigate(Screen.OrderDetails.route) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text("Thanh toán", color = Color.White)
+                    Text("Thanh toán")
                 }
             }
         }
     }
 }
+
 //
 //
 //

@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.doanltd.CartItem
 import com.example.doanltd.Screen.*
 import com.example.doanltd.Screen.CategoryScreen
 import com.example.doanltd.Screen.ChatScreen
