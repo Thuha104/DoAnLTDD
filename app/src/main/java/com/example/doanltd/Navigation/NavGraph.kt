@@ -33,6 +33,7 @@ sealed class Screen(val route: String) {
     object OrderDetails : Screen("order_details")
     object ProductDetail : Screen("productdetail")
     object OrderHistory : Screen("order_history")
+    object XemDonHang:Screen("xem_don_hang")
     object Review : Screen("review/{productId}")
     object CategoryScreen : Screen("category/{categoryId}") {
         fun createRoute(categoryId: String): String = "category/$categoryId"
@@ -128,6 +129,9 @@ fun AuthNavigation() {
         }
         composable(Screen.OrderHistory.route) {
             OrderHistoryScreen(navController = navController)
+        }
+        composable(Screen.XemDonHang.route){
+            XemDonHangScreen(navController)
         }
         composable(
             route = Screen.Review.route,

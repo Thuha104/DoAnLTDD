@@ -170,7 +170,7 @@ fun ProfileScreen(navController: NavController) {
                 // Orders Icon
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { /* TODO: Add navigation to orders */ }
+                    modifier = Modifier.clickable { navController.navigate(Screen.XemDonHang.route)}
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingBag,
