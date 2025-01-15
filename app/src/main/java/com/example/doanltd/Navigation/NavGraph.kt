@@ -15,7 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-<<<<<<< HEAD
 import com.example.doanltd.Screen.*
 import com.example.doanltd.Screen.CategoryScreen
 import com.example.doanltd.Screen.ChatScreen
@@ -29,15 +28,11 @@ import com.example.doanltd.Screen.RegisterScreen
 import com.example.doanltd.Screen.ReviewScreen
 import com.example.doanltd.Screen.SettingScreen
 import com.google.gson.Gson
-
-=======
 import com.example.doanltd.AppDatabase
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 import com.example.doanltd.Screen.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
->>>>>>> d7dd8f80d2a134ac95f41b9bb40b3f168decfc9a
-
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
@@ -133,12 +128,11 @@ fun AuthNavigation() {
         composable(Screen.OrderDetails.route) {
             OrderDetailsScreen(navController = navController)
         }
-<<<<<<< HEAD
-=======
+
         composable(Screen.Admin.route) {
             AdminScreen(navController = navController)
         }
->>>>>>> d7dd8f80d2a134ac95f41b9bb40b3f168decfc9a
+
 
         composable(
             route = "${Screen.ProductDetail.route}/{id}",

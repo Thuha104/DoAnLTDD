@@ -42,9 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.CartDao
-import com.example.doanltd.CartItemEntity
+
 import com.example.doanltd.CartManager
 import com.example.doanltd.Navigation.Screen
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
 import kotlinx.coroutines.launch
 
 
