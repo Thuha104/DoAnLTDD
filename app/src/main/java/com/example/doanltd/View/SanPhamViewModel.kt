@@ -1,13 +1,18 @@
 package com.example.doanltd.View
 
+import HoaDonRequest
 import LoaiSP
 import RetrofitInstance
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doanltd.data.HoaDon
 import com.example.doanltd.data.SanPham
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SanPhamViewModel :ViewModel(){
@@ -22,6 +27,9 @@ class SanPhamViewModel :ViewModel(){
     var productDetail by mutableStateOf<SanPham?>(null)
         private set
 
+    var hoadons by mutableStateOf<List<HoaDon>>(emptyList())
+        private set
+
     var isLoading by mutableStateOf(true)
         private set
 
@@ -31,6 +39,7 @@ class SanPhamViewModel :ViewModel(){
     init {
         fetchPosts()
         fetchLoaiSanPham()
+        fetchHoaDon()
     }
 
     // ham gọi ds post
@@ -77,5 +86,49 @@ class SanPhamViewModel :ViewModel(){
             }
         }
     }
+
+    private fun fetchHoaDon() {
+        viewModelScope.launch {
+            try {
+                isLoading = true
+                // Lấy dữ liệu từ API
+                val response = RetrofitInstance.api.getHoaDon()
+                hoadons = response
+                isLoading = false
+            } catch (e: Exception) {
+                // Xử lý lỗi và cập nhật thông báo lỗi
+                isLoading = false
+                errorMessage = e.message
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+
+    // success
+    private val _hoadonthanhcong = MutableStateFlow<Boolean?>(null)
+    val hoadonthanhcong: StateFlow<Boolean?> = _hoadonthanhcong
+
+    // message
+    private val _hoadonthongbao = MutableStateFlow<String?>(null)
+    val hoadonthongbao: StateFlow<String?> = _hoadonthongbao
+
+    // mahd
+    private val _MaHd = MutableStateFlow<String?>(null)
+    val MaHd: StateFlow<String?> = _MaHd
+
+
+    suspend fun themhoadon(MaNgD:String,TongTien:Double,DiaChi:String) {
+        try {
+            val response = RetrofitInstance.api.themhoadon(HoaDonRequest(MaNgD,TongTien,DiaChi))
+            _hoadonthanhcong.value = response.status
+            _hoadonthongbao.value = response.message
+            _MaHd.value = response.MaHD
+        } catch (e: Exception) {
+            Log.e("API", "Lỗi đăng ký: ${e.message}")
+        }
+    }
+
 
 }

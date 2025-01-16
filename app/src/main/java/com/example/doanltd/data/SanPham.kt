@@ -8,5 +8,6 @@ data class SanPham(
     val HinhSp:String,
     val MoTa:String,
     val DonGia: Double,
-    val TrangThai:Int
+    val TrangThai:Int,
+    val SoLuong:Int
 )
