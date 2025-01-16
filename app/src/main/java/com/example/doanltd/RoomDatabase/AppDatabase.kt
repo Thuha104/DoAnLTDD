@@ -10,7 +10,7 @@ import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 
 
 
-@Database(entities = [CartItemEntity::class, NgDungEntity::class], version = 2, exportSchema = false)
+@Database(entities = [CartItemEntity::class, NgDungEntity::class], version = 3, exportSchema = false)
 
 abstract class AppDatabase : RoomDatabase() {
 
@@ -30,7 +30,6 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration()
                     .build()
-
                     "app_database"
              INSTANCE = instance
                 instance

@@ -76,11 +76,12 @@ class CartManager(context: Context) {
         val existingItem = cartDao.getCartItemById(cartItem.MaSp)
         if (existingItem != null)
         {//kiem tra so luong của sản phẩm >= so sl sp đó trong giỏ hàng
-
             val updatedQuantity = existingItem.quantity + cartItem.quantity
+
+            if (updatedQuantity<=cartItem.SoLuongSP){
             cartDao.updateCartItem(existingItem.copy(quantity = updatedQuantity))
+            }
         } else {
-            // If the item doesn't exist, insert it
             cartDao.insertCartItem(cartItem)
         }
     }

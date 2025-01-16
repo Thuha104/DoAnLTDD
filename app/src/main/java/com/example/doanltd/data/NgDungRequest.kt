@@ -26,3 +26,16 @@ data class LoginReponse(
     val status: Boolean,
     val user:NgDungEntity
 )
+
+
+data class HoaDonRequest(
+    @SerializedName("MaNgD") val MaNgD : String,
+    @SerializedName("TongTien") val TongTien: Double,
+    @SerializedName("DiaChi") val Diachi: String,
+)
+
+data class HoaDonReponse(
+    val success: Boolean,
+    val message:String,
+    val MaHD:String
+)

@@ -67,8 +67,15 @@ fun CartScreen(navController: NavHostController) {
     fun updateCartItem(cartItem: CartItemEntity, newQuantity: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             if (newQuantity > 0) {
+                if (newQuantity > cartItem.SoLuongSP)
+                {
+                    // Cập nhật với số lượng tối đa cho phép
+                cartDao.updateCartItem(cartItem.copy(quantity = cartItem.SoLuongSP))
+                }
+                // Cập nhật với số lượng mới
                 cartDao.updateCartItem(cartItem.copy(quantity = newQuantity))
             } else {
+                // Xóa sản phẩm nếu số lượng <= 0
                 cartDao.deleteCartItem(cartItem)
             }
             val items = cartDao.getAllCartItems()
@@ -115,13 +122,30 @@ fun CartScreen(navController: NavHostController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Text(
-                text = "Giỏ hàng",
-                style = MaterialTheme.typography.titleLarge,
+            Row(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Sắp xếp thành 2 phần
+            ) {
+                // Nút Quay lại ở góc trái
+                IconButton(
+                    onClick = { navController.navigateUp() }
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Quay lại")
+                }
+
+                // Chữ Giỏ hàng ở giữa
+                Text(
+                    text = "Giỏ hàng",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+
+                // Chỗ này để có thể thêm nút nếu cần ở bên phải (như nút chỉnh sửa hoặc thông báo)
+                Spacer(modifier = Modifier.width(48.dp)) // Để tránh việc có nút khác ở bên phải
+            }
 
             if (cartItems.value.isEmpty()) {
                 Text(
@@ -182,7 +206,7 @@ fun CartScreen(navController: NavHostController) {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Button(
-                    onClick = { navController.navigate(Screen.OrderDetails.route) },
+                    onClick = {  navController.navigate(Screen.OrderDetails.route) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)

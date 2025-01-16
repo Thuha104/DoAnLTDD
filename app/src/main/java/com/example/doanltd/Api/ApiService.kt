@@ -26,12 +26,20 @@ interface ApiService{
 
  @GET("sanpham/laySanPhamTheoMaSP.php")
     suspend fun getChiTietSanPham(@Query("id") productId: String): SanPham
+
+
+@POST("hoadon/themhoadon.php")
+    suspend fun themhoadon(@Body request: HoaDonRequest):HoaDonReponse
+
+
+
 }
+
 
 object RetrofitInstance{
     val api:ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.7/restful_api_php/api/")
+            .baseUrl("http://192.168.1.131/restful_api_php/api/")
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .build()
             .create(ApiService::class.java)

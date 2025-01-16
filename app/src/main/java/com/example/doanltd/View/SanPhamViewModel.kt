@@ -1,5 +1,6 @@
 package com.example.doanltd.View
 
+import HoaDonRequest
 import LoaiSP
 import RetrofitInstance
 import androidx.compose.runtime.getValue
@@ -8,6 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doanltd.data.SanPham
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SanPhamViewModel :ViewModel(){
@@ -77,5 +81,31 @@ class SanPhamViewModel :ViewModel(){
             }
         }
     }
+
+
+    private val _hoadonthanhcong = MutableStateFlow<Boolean?>(value = null)
+    val hoadonthanhcong:StateFlow<Boolean?> = _hoadonthanhcong
+
+    private val _hoadonthongbao = MutableStateFlow<String?>(value = null)
+    val hoadonthongbao:StateFlow<String?> = _hoadonthongbao
+
+    private val _MaHd = MutableStateFlow<String?>(value = null)
+    val MaHd:StateFlow<String?> = _MaHd
+
+    suspend fun themhoadon(MaNgD:String, TongTien:Double, DiaChi:String){
+        try {
+            val response = RetrofitInstance.api.themhoadon(HoaDonRequest(MaNgD,TongTien,MaNgD))
+            _hoadonthanhcong.value=response.success
+            _hoadonthongbao.value=response.message
+            _MaHd.value=response.MaHD
+            }
+        catch (e:Exception){
+
+        }
+    }
+
+
+
+
 
 }

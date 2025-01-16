@@ -1,7 +1,8 @@
-package com.example.doanltd.Screen
+    package com.example.doanltd.Screen
 
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,314 +35,255 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
+import com.example.doanltd.View.SanPhamViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderDetailsScreen(navController: NavController) {
-    var selectedPaymentMethod by remember { mutableStateOf<String?>(null) }
-    var deliveryAddress by remember { mutableStateOf("192, Phạm Đức Sơn, Phường 16, Quận 8") }
-    var showAddressDialog by remember { mutableStateOf(false) }
-    var showResultDialog by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
-    var customerNote by remember { mutableStateOf("") }
+fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel = viewModel()) {
+        var selectedPaymentMethod by remember { mutableStateOf<String?>(null) }
+        var showAddressDialog by remember { mutableStateOf(false) }
+        var showResultDialog by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
+        var customerNote by remember { mutableStateOf("") }
 
-    if (showAddressDialog) {
-        AddressEditDialog(
-            currentAddress = deliveryAddress,
-            onDismiss = { showAddressDialog = false },
-            onSave = {
-                deliveryAddress = it
-                showAddressDialog = false
-            }
-        )
-    }
+        val context = LocalContext.current
+        val db = remember { AppDatabase.getDatabase(context) }
+        val cartDao = remember { db.cartDao() }
+        val cartItems = remember { mutableStateOf<List<CartItemEntity>>(emptyList()) }
+        val totalAmount = remember { mutableStateOf(0.0) }
+        var showError by remember { mutableStateOf(false) }
 
-    showResultDialog?.let { (isSuccess, message) ->
-        ResultDialog(
-            isSuccess = isSuccess,
-            message = message,
-            onDismiss = { showResultDialog = null }
-        )
-    }
+        var user by remember { mutableStateOf<NgDungEntity?>(null) }
+        val dbdao = AppDatabase.getDatabase(context).ngDungDao()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Thông tin đơn hàng") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+        val hoadonthanhcong by viewModel.hoadonthanhcong.collectAsState()
+        val hoadonthongbao by viewModel.hoadonthongbao.collectAsState()
+        val MaHd by viewModel.MaHd.collectAsState()
+
+        LaunchedEffect(Unit) {
+            val items = cartDao.getAllCartItems()
+            cartItems.value = items
+            totalAmount.value = items.sumOf { it.price * it.quantity }
+            CoroutineScope(Dispatchers.IO).launch {
+                val userList = dbdao.getAll()
+                if (userList.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        user = userList[0]
                     }
                 }
-            )
+            }
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
-            // Delivery Address
-            Text(
-                "Địa chỉ: $deliveryAddress",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .clickable { showAddressDialog = true }
-            )
 
-            // Order Details
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.anh1),
-                    contentDescription = "",
-                    modifier = Modifier.size(80.dp)
+
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Thông tin đơn hàng") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
                 )
-                Column(
-                    modifier = Modifier.weight(1f)
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+            ) {
 
-                ) {
-                    Text(
-                        "[COMBO 6] Bánh Tráng Phơi Sương Sốt Tắc Muối Ruốc Hành Phí",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Số lượng: 2")
-                        Text("65.000đ")
+                // Order Details
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(cartItems.value) { cartItem ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AsyncImage(
+                                model = cartItem.imageUrl,
+                                contentDescription = "Hình ảnh sản phẩm",
+                                modifier = Modifier.size(80.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 16.dp)
+                            ) {
+                                Text(text = cartItem.name, fontWeight = FontWeight.Bold)
+                                Text(text = "Giá: ${cartItem.price} VND")
+                                Text(text = "Số lượng: ${cartItem.quantity}")
+                            }
+                        }
                     }
                 }
-            }
-
-            // Order Summary
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                // Order Summary
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
-                    Text(
-                        "Tóm tắt đơn hàng",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Tiền sản phẩm:")
-                        Text("65.000đ")
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Vận chuyển:")
-                        Text("10.500đ",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                textDecoration = TextDecoration.LineThrough))
-                    }
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            "Tổng:",
+                            "Tóm tắt đơn hàng",
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            "65.000đ",
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Tiền sản phẩm:")
+                            Text("${totalAmount.value} VND")
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Vận chuyển:")
+                            Text(
+                                "0đ",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                )
+                            )
+                        }
+                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Tổng:",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red
+                            )
+                            Text("${totalAmount.value} VND",
                             fontWeight = FontWeight.Bold,
                             color = Color.Red
-                        )
+                            )
+                        }
                     }
                 }
-            }
 
-            // Payment Methods
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                // Payment Methods
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
-                    Text(
-                        "Hình thức thanh toán:",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        RadioButton(
-                            selected = selectedPaymentMethod == "COD",
-                            onClick = { selectedPaymentMethod = "COD" }
-                        )
                         Text(
-                            "Thanh toán khi nhận hàng",
-                            modifier = Modifier.padding(start = 8.dp)
+                            "Hình thức thanh toán: khi nhận hàng",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
-                    }
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                    }
+                }
+
+                // Customer Note
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        RadioButton(
-                            selected = selectedPaymentMethod == "DIGITAL",
-                            onClick = { selectedPaymentMethod = "DIGITAL" }
-                        )
                         Text(
-                            "Thanh toán qua ví điện tử",
-                            modifier = Modifier.padding(start = 8.dp)
+                            "Địa chỉ :",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = customerNote,
+                            onValueChange = {
+                                customerNote = it
+                                showError = false
+                            },
+                            label = { Text("Nhập địa chỉ.......") },
+                            modifier = Modifier.fillMaxWidth(),
+                            isError = showError
+                        )
+                        if (showError) {
+                            Text(
+                                text = "Vui lòng nhập địa chỉ!",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                 }
-            }
 
-            // Customer Note
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        "Lời nhắn từ khách hàng:",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                // Order Button
+                Button(
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.themhoadon(user!!.MaNgD, totalAmount!!.value, customerNote)
+                        }
+                        if (customerNote.isBlank()) {
+                            // Hiển thị lỗi nếu địa chỉ chưa được nhập
+                            showError = true
+                        } else {
+                            // Điều hướng sang màn hình "Xem đơn hàng" nếu địa chỉ hợp lệ
+                            navController.navigate("xem_don_hang")
+                        }
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = customerNote,
-                        onValueChange = { customerNote = it },
-                        label = { Text("Nhập lời nhắn...") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-
-            // Order Button
-            Button(
-                onClick = {
-                    if (selectedPaymentMethod == null) {
-                        showResultDialog = false to "Bạn chưa chọn hình thức thanh toán!"
-                    } else {
-                        showResultDialog = true to "Đặt hàng thành công! Lời nhắn: $customerNote"
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
-                )
-            ) {
-                Text("Đặt hàng")
-            }
-        }
-    }
-}
-
-@Composable
-fun AddressEditDialog(currentAddress: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
-    var newAddress by remember { mutableStateOf(currentAddress) }
-
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Chỉnh sửa địa chỉ", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = newAddress,
-                    onValueChange = { newAddress = it },
-                    label = { Text("Địa chỉ mới") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Hủy")
-                    }
-                    Button(onClick = { onSave(newAddress) }) {
-                        Text("Lưu")
-                    }
+                    Text("Đặt hàng")
                 }
             }
         }
-    }
-}
+        LaunchedEffect(hoadonthanhcong) {
+            hoadonthanhcong?.let {
+                if (it) {
+                    //delete giỏ hàng đã đặt
+                    CoroutineScope(Dispatchers.IO).launch {
+                        cartDao.deleteAllCartItems()
+                    }
+                    // đúng
+                    navController.navigate("xem_don_hang")
+                }
+                else{
+                    Toast.makeText( context,"$hoadonthongbao!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
-@Composable
-fun ResultDialog(isSuccess: Boolean, message: String, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = if (isSuccess) Icons.Default.Check else Icons.Default.Close,
-                    contentDescription = null,
-                    tint = if (isSuccess) Color.Green else Color.Red,
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(message, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onDismiss) {
-                    Text("Đóng")
-                }
-            }
-        }
     }
-}
-//
-//
-//
-//
-//
-//
-//
+
+
