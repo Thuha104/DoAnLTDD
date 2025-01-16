@@ -1,3 +1,4 @@
+import com.example.doanltd.data.HoaDon
 import com.example.doanltd.data.SanPham
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
@@ -16,15 +17,18 @@ interface ApiService{
  @GET("loaisp/dsloaisp.php")
  suspend fun getLoaiSP():List<LoaiSP>
 
+ @POST("ngdung/capnhapmatkhau.php")
+ suspend fun capnhatmatkhau(@Body request: UpdatePasswordRequest): UpdatePasswordResponse
+
  @Headers("Content-Type: application/json")
  @POST("ngdung/dangky.php")
  suspend fun dangky(@Body request: RegisterRequest):RegisterResponse
 
-
  @POST("ngdung/dangnhap.php")
-    suspend fun dangnhap(@Body request: LoginRequest):LoginReponse
+ suspend fun dangnhap(@Body request: LoginRequest):LoginReponse
 
  @GET("sanpham/laySanPhamTheoMaSP.php")
+<<<<<<< HEAD
     suspend fun getChiTietSanPham(@Query("id") productId: String): SanPham
 
 
@@ -33,13 +37,27 @@ interface ApiService{
 
 
 
+=======
+ suspend fun getChiTietSanPham(@Query("id") productId: String): SanPham
+
+ @GET("hoadon/dshoadon.php")
+ suspend fun  getHoaDon():List<HoaDon>
+
+ @Headers("Content-Type: application/json")
+ @POST("hoadon/themhoadon.php")
+ suspend fun themhoadon(@Body request: HoaDonRequest):HoaDonReponse
+>>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
 }
 
 
 object RetrofitInstance{
     val api:ApiService by lazy {
         Retrofit.Builder()
+<<<<<<< HEAD
             .baseUrl("http://192.168.1.131/restful_api_php/api/")
+=======
+            .baseUrl("http://192.168.1.11/restful_api_php/api/")
+>>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .build()
             .create(ApiService::class.java)

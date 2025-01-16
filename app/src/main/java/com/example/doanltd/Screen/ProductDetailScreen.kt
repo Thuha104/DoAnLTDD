@@ -178,7 +178,11 @@ fun ProductDetailScreen(
                                 price = product!!.DonGia,
                                 quantity = 1,
                                 imageUrl = product!!.HinhSp,
+<<<<<<< HEAD
                                 SoLuongSP = product!!.SoLuong,
+=======
+                                SoLuongSP = product!!.SoLuong
+>>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
                             )
                             CoroutineScope(Dispatchers.IO).launch {
                                 CartManager(context).addToCart(cartItem)

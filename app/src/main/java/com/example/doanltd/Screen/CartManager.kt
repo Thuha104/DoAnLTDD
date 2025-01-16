@@ -72,13 +72,26 @@ class CartManager(context: Context) {
     }
 
     // Add a new item to the cart or update an existing one
+    // số lương sp
     suspend fun addToCart(cartItem: CartItemEntity) = withContext(Dispatchers.IO) {
         val existingItem = cartDao.getCartItemById(cartItem.MaSp)
         if (existingItem != null)
+<<<<<<< HEAD
         {//kiem tra so luong của sản phẩm >= so sl sp đó trong giỏ hàng
             val updatedQuantity = existingItem.quantity + cartItem.quantity
 
             if (updatedQuantity<=cartItem.SoLuongSP){
+=======
+        {
+            //kiem tra so luong của sản phẩm >= so sl sp đó trong giỏ hàng
+            var updatedQuantity = existingItem.quantity + cartItem.quantity
+
+            if(cartItem.SoLuongSP <= updatedQuantity)
+            {
+                updatedQuantity = cartItem.SoLuongSP
+                cartDao.updateCartItem(existingItem.copy(quantity = updatedQuantity))
+            }
+>>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
             cartDao.updateCartItem(existingItem.copy(quantity = updatedQuantity))
             }
         } else {

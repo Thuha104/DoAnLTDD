@@ -67,12 +67,19 @@ fun CartScreen(navController: NavHostController) {
     fun updateCartItem(cartItem: CartItemEntity, newQuantity: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             if (newQuantity > 0) {
+<<<<<<< HEAD
                 if (newQuantity > cartItem.SoLuongSP)
                 {
                     // Cập nhật với số lượng tối đa cho phép
                 cartDao.updateCartItem(cartItem.copy(quantity = cartItem.SoLuongSP))
                 }
                 // Cập nhật với số lượng mới
+=======
+                if(newQuantity > cartItem.SoLuongSP)
+                {
+                    cartDao.updateCartItem(cartItem.copy(quantity = cartItem.SoLuongSP))
+                }
+>>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
                 cartDao.updateCartItem(cartItem.copy(quantity = newQuantity))
             } else {
                 // Xóa sản phẩm nếu số lượng <= 0
