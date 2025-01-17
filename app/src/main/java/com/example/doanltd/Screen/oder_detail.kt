@@ -267,8 +267,8 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                 }
 
 
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Home.route) { inclusive = true }
+                navController.navigate(Screen.XemDonHang.route) {
+                    popUpTo(0) { inclusive = true }
                 }
             }
             else{

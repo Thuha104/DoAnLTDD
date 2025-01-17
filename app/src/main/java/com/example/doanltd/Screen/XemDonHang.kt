@@ -36,12 +36,12 @@ import coil.compose.AsyncImage
 @Composable
 fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel = viewModel()) {
     val hoaDons by remember { derivedStateOf { viewModel.hoadons } }
-
     val context = LocalContext.current
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val db = AppDatabase.getDatabase(context).ngDungDao()
-
-
+    var selectedStatus by remember { mutableStateOf("Tất cả") }
+    val statuses = listOf("Tất cả", "Đã đặt", "Đặt hàng thành công", "Đang giao","Đã giao","Đã hủy")
+    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -54,17 +54,14 @@ fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel =
         }
     }
 
-    val filteredHoaDons = hoaDons.filter { it.MaNgD == user?.MaNgD }
+    val filteredHoaDons = hoaDons.filter {
+        (selectedStatus == "Tất cả" || it.TrangThai == selectedStatus) && it.MaNgD == user?.MaNgD
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Danh sách đơn hàng",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
+                title = { Text("Danh sách đơn hàng", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, "Back")
@@ -78,17 +75,42 @@ fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel =
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+                OutlinedTextField(
+                    value = selectedStatus,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Lọc theo trạng thái") },
+                    trailingIcon = {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    },
+                    modifier = Modifier.menuAnchor().fillMaxWidth().padding(16.dp)
+                )
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    statuses.forEach { status ->
+                        DropdownMenuItem(
+                            text = { Text(status) },
+                            onClick = {
+                                selectedStatus = status
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(filteredHoaDons) { hoadon ->
-                    OrderItem(hoadon, navController,viewModel)
+                    OrderItem(hoadon, navController, viewModel)
                 }
             }
         }
     }
 }
+
 
 @Composable
 private fun OrderItem(hoaDon: HoaDon, navController: NavController,viewModel: SanPhamViewModel = viewModel()) {

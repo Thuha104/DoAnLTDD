@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Adjust
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -42,13 +43,15 @@ import com.example.doanltd.data.HoaDon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminScreen(navController: NavController,viewModel: SanPhamViewModel = viewModel()) {
+fun AdminScreen(navController: NavController, viewModel: SanPhamViewModel = viewModel()) {
     val hoaDons by remember { derivedStateOf { viewModel.hoadons } }
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context).ngDungDao()
 
-
+    var expanded by remember { mutableStateOf(false) }
+    var selectedStatus by remember { mutableStateOf("Tất cả") }
+    val statusList = listOf("Tất cả", "Đã đặt", "Đặt hàng thành công", "Đang giao","Đã giao","Đã hủy")
 
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -61,56 +64,68 @@ fun AdminScreen(navController: NavController,viewModel: SanPhamViewModel = viewM
         }
     }
 
+    val filteredHoaDons = if (selectedStatus == "Tất cả") hoaDons else hoaDons.filter { it.TrangThai == selectedStatus }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Admin") }
             )
         },
-        bottomBar ={
+        bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Adjust, contentDescription = "Home") },
                     label = { Text("Đăng xuất") },
                     selected = true,
-                    onClick = {  navController.navigate(Screen.Login.route) {
-                        CoroutineScope(Dispatchers.IO).launch { user?.let { db.delete(it) } }
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }}
+                    onClick = {
+                        navController.navigate(Screen.Login.route) {
+                            CoroutineScope(Dispatchers.IO).launch { user?.let { db.delete(it) } }
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    }
                 )
             }
         }
-
     ) { paddingValues ->
-//        Button(
-//            onClick = {
-//                navController.navigate(Screen.Login.route) {
-//                    CoroutineScope(Dispatchers.IO).launch { user?.let { db.delete(it) } }
-//                    popUpTo(Screen.Login.route) { inclusive = true }
-//                }
-//            },
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp),
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
-//        ) {
-//            Text("Đăng Xuất")
-//        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+                OutlinedTextField(
+                    value = selectedStatus,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Lọc theo trạng thái") },
+                    trailingIcon = {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
+                    },
+                    modifier = Modifier.menuAnchor()
+                )
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    statusList.forEach { status ->
+                        DropdownMenuItem(
+                            text = { Text(status) },
+                            onClick = {
+                                selectedStatus = status
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(hoaDons) { hoadon ->
-                    OrderItemA(hoadon,navController,viewModel)
+                items(filteredHoaDons) { hoadon ->
+                    OrderItemA(hoadon, navController, viewModel)
                 }
             }
         }
-
     }
 }
 
