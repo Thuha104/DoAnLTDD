@@ -1,26 +1,14 @@
 package com.example.doanltd.Screen
 
 
-import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,50 +16,59 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
-import com.example.doanltd.Navigation.Screen
-import com.example.doanltd.R
+import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
+import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
+import com.example.doanltd.View.SanPhamViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderDetailsScreen(navController: NavController) {
+fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel = viewModel()) {
     var selectedPaymentMethod by remember { mutableStateOf<String?>(null) }
-    var deliveryAddress by remember { mutableStateOf("192, Phạm Đức Sơn, Phường 16, Quận 8") }
     var showAddressDialog by remember { mutableStateOf(false) }
     var showResultDialog by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
     var customerNote by remember { mutableStateOf("") }
 
-    if (showAddressDialog) {
-        AddressEditDialog(
-            currentAddress = deliveryAddress,
-            onDismiss = { showAddressDialog = false },
-            onSave = {
-                deliveryAddress = it
-                showAddressDialog = false
+    val context = LocalContext.current
+    val db = remember { AppDatabase.getDatabase(context) }
+    val cartDao = remember { db.cartDao() }
+    val cartItems = remember { mutableStateOf<List<CartItemEntity>>(emptyList()) }
+    val totalAmount = remember { mutableStateOf(0.0) }
+    var showError by remember { mutableStateOf(false) }
+
+    var user by remember { mutableStateOf<NgDungEntity?>(null) }
+    val dbdao = AppDatabase.getDatabase(context).ngDungDao()
+
+    val hoadonthanhcong by viewModel.hoadonthanhcong.collectAsState()
+    val hoadonthongbao by viewModel.hoadonthongbao.collectAsState()
+    val MaHd by viewModel.MaHd.collectAsState()
+
+    LaunchedEffect(Unit) {
+        val items = cartDao.getAllCartItems()
+        cartItems.value = items
+        totalAmount.value = items.sumOf { it.price * it.quantity }
+        CoroutineScope(Dispatchers.IO).launch {
+            val userList = dbdao.getAll()
+            if (userList.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                    user = userList[0]
+                }
             }
-        )
+        }
     }
 
-    showResultDialog?.let { (isSuccess, message) ->
-        ResultDialog(
-            isSuccess = isSuccess,
-            message = message,
-            onDismiss = { showResultDialog = null }
-        )
-    }
+
 
     Scaffold(
         topBar = {
@@ -92,46 +89,34 @@ fun OrderDetailsScreen(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Delivery Address
-            Text(
-                "Địa chỉ: $deliveryAddress",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .clickable { showAddressDialog = true }
-            )
 
             // Order Details
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.anh1),
-                    contentDescription = "",
-                    modifier = Modifier.size(80.dp)
-                )
-                Column(
-                    modifier = Modifier.weight(1f)
-
-                ) {
-                    Text(
-                        "[COMBO 6] Bánh Tráng Phơi Sương Sốt Tắc Muối Ruốc Hành Phí",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(cartItems.value) { cartItem ->
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Số lượng: 2")
-                        Text("65.000đ")
+                        AsyncImage(
+                            model = cartItem.imageUrl,
+                            contentDescription = "Hình ảnh sản phẩm",
+                            modifier = Modifier.size(80.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 16.dp)
+                        ) {
+                            Text(text = cartItem.name, fontWeight = FontWeight.Bold)
+                            Text(text = "Giá: ${cartItem.price} VND")
+                            Text(text = "Số lượng: ${cartItem.quantity}")
+                        }
                     }
                 }
             }
-
             // Order Summary
             Card(
                 modifier = Modifier
@@ -152,28 +137,30 @@ fun OrderDetailsScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Tiền sản phẩm:")
-                        Text("65.000đ")
+                        Text("${totalAmount.value} VND")
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Vận chuyển:")
-                        Text("10.500đ",
+                        Text(
+                            "0đ",
                             style = MaterialTheme.typography.bodySmall.copy(
-                                textDecoration = TextDecoration.LineThrough))
+                                textDecoration = TextDecoration.LineThrough
+                            )
+                        )
                     }
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            "Tổng:",
-                            fontWeight = FontWeight.Bold
+                        Text("Tổng:",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red
                         )
-                        Text(
-                            "65.000đ",
+                        Text("${totalAmount.value} VND",
                             fontWeight = FontWeight.Bold,
                             color = Color.Red
                         )
@@ -191,39 +178,12 @@ fun OrderDetailsScreen(navController: NavController) {
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        "Hình thức thanh toán:",
+                        "Hình thức thanh toán: khi nhận hàng",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        RadioButton(
-                            selected = selectedPaymentMethod == "COD",
-                            onClick = { selectedPaymentMethod = "COD" }
-                        )
-                        Text(
-                            "Thanh toán khi nhận hàng",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        RadioButton(
-                            selected = selectedPaymentMethod == "DIGITAL",
-                            onClick = { selectedPaymentMethod = "DIGITAL" }
-                        )
-                        Text(
-                            "Thanh toán qua ví điện tử",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
                 }
             }
 
@@ -237,28 +197,43 @@ fun OrderDetailsScreen(navController: NavController) {
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        "Lời nhắn từ khách hàng:",
+                        "Địa chỉ :",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = customerNote,
-                        onValueChange = { customerNote = it },
-                        label = { Text("Nhập lời nhắn...") },
-                        modifier = Modifier.fillMaxWidth()
+                        onValueChange = {
+                            customerNote = it
+                            showError = false
+                        },
+                        label = { Text("Nhập địa chỉ.......") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = showError
                     )
+                    if (showError) {
+                        Text(
+                            text = "Vui lòng nhập địa chỉ!",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
             }
 
             // Order Button
             Button(
                 onClick = {
-                    if (selectedPaymentMethod == null) {
-                        showResultDialog = false to "Bạn chưa chọn hình thức thanh toán!"
-                    } else {
-                        showResultDialog = true to "Đặt hàng thành công! Lời nhắn: $customerNote"
+                    CoroutineScope(Dispatchers.IO).launch {
+                        viewModel.themhoadon(user!!.MaNgD,totalAmount.value,customerNote)
                     }
+                    if (customerNote.isBlank()) {
+                        // Hiển thị lỗi nếu địa chỉ chưa được nhập
+                        showError = true
+                    }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -271,77 +246,32 @@ fun OrderDetailsScreen(navController: NavController) {
             }
         }
     }
-}
-
-@Composable
-fun AddressEditDialog(currentAddress: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
-    var newAddress by remember { mutableStateOf(currentAddress) }
-
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Chỉnh sửa địa chỉ", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = newAddress,
-                    onValueChange = { newAddress = it },
-                    label = { Text("Địa chỉ mới") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Hủy")
-                    }
-                    Button(onClick = { onSave(newAddress) }) {
-                        Text("Lưu")
-                    }
+    LaunchedEffect(hoadonthanhcong) {
+        hoadonthanhcong?.let {
+            if (it) {
+                var cartItems = cartDao.getAllCartItems()
+                // Duyệt qua các mục và thêm chi tiết hóa đơn
+                cartItems.forEach { cartItem ->
+                    viewModel.themchitiethoadon(
+                        MaHD = MaHd.toString(),
+                        DonGia = cartItem.price,
+                        MaSp = cartItem.MaSp,
+                        SLMua = cartItem.quantity.toDouble()
+                    )
                 }
+                // đúng
+                navController.navigate("xem_don_hang")
+                //delete giỏ hàng đã đặt
+                CoroutineScope(Dispatchers.IO).launch {
+                    cartDao.deleteAllCartItems()
+                }
+            }
+            else{
+                Toast.makeText( context,"$hoadonthongbao", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 }
 
-@Composable
-fun ResultDialog(isSuccess: Boolean, message: String, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = if (isSuccess) Icons.Default.Check else Icons.Default.Close,
-                    contentDescription = null,
-                    tint = if (isSuccess) Color.Green else Color.Red,
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(message, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onDismiss) {
-                    Text("Đóng")
-                }
-            }
-        }
-    }
-}
-//
-//
-//
-//
-//
-//
-//
+

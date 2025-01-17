@@ -4,6 +4,7 @@ import ApiService
 import LoginRequest
 import NgDung
 import RegisterRequest
+import UpdatePasswordRequest
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
@@ -43,4 +44,32 @@ class AuthViewModel : ViewModel(){
             Log.e("API", "Lỗi đăng nhap: ${e.message}")
         }
     }
+
+
+    private val _capNhatMatKhauThanhCong = MutableStateFlow<Boolean?>(null)
+    val capNhatMatKhauThanhCong: StateFlow<Boolean?> = _capNhatMatKhauThanhCong
+
+    private val _thongbaocapnhatmatkhau = MutableStateFlow<String?>(null)
+    val thongbaocapnhatmatkhau: StateFlow<String?> = _thongbaocapnhatmatkhau
+
+    suspend fun capNhatMatKhau(MaNgD: String, MatKhauCu: String, MatKhauMoi: String) {
+        try {
+            val response = apiService.capnhatmatkhau(UpdatePasswordRequest(MaNgD, MatKhauCu, MatKhauMoi))
+            Log.d("API", "Cập nhật mật khẩu: ${response}")
+            _capNhatMatKhauThanhCong.value=response.success
+            _thongbaocapnhatmatkhau.value= response.message
+        } catch (e: Exception) {
+            Log.e("API", "Lỗi cập nhật mật khẩu: ${e.message}")
+            _capNhatMatKhauThanhCong.value = false // Lỗi ngoại lệ
+        }
+    }
+
+    fun resetPasswordChangeState() {
+        _capNhatMatKhauThanhCong.value = null
+        _thongbaocapnhatmatkhau.value = null
+    }
+
+
+
 }
+

@@ -1,3 +1,5 @@
+import com.example.doanltd.data.ChiTietHoaDon
+import com.example.doanltd.data.HoaDon
 import com.example.doanltd.data.SanPham
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
@@ -16,22 +18,44 @@ interface ApiService{
  @GET("loaisp/dsloaisp.php")
  suspend fun getLoaiSP():List<LoaiSP>
 
+ @POST("ngdung/capnhapmatkhau.php")
+ suspend fun capnhatmatkhau(@Body request: UpdatePasswordRequest): UpdatePasswordResponse
+
  @Headers("Content-Type: application/json")
  @POST("ngdung/dangky.php")
  suspend fun dangky(@Body request: RegisterRequest):RegisterResponse
 
-
  @POST("ngdung/dangnhap.php")
-    suspend fun dangnhap(@Body request: LoginRequest):LoginReponse
+ suspend fun dangnhap(@Body request: LoginRequest):LoginReponse
 
  @GET("sanpham/laySanPhamTheoMaSP.php")
-    suspend fun getChiTietSanPham(@Query("id") productId: String): SanPham
+ suspend fun getChiTietSanPham(@Query("id") productId: String): SanPham
+
+ @GET("hoadon/dshoadon.php")
+ suspend fun  getHoaDon():List<HoaDon>
+
+ @Headers("Content-Type: application/json")
+ @POST("hoadon/themhoadon.php")
+ suspend fun themhoadon(@Body request: HoaDonRequest):HoaDonReponse
+
+ @Headers("Content-Type: application/json")
+ @POST("chitiethoadon/themchitiet.php")
+ suspend fun themchitiethoadon(@Body request: HoaDonChiTietRequest):HoaDonChiTietReponse
+
+ @GET("chitiethoadon/dschitiethoadon.php")
+ suspend fun getChiTietHoaDon(@Query("MaHD") maHD: String): List<ChiTietHoaDon>
+
+    @Headers("Content-Type: application/json")
+    @POST("hoadon/capnhaptrangthai.php")
+    suspend fun capnhathoadon(@Body request: CapNhatDonHangRequest):CapNhatDonHangReponse
+
 }
+
 
 object RetrofitInstance{
     val api:ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("http://192.168.1.7/restful_api_php/api/")
+            .baseUrl("http://192.168.1.66/restful_api_php/api/")
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .build()
             .create(ApiService::class.java)

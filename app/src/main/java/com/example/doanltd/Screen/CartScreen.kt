@@ -67,6 +67,10 @@ fun CartScreen(navController: NavHostController) {
     fun updateCartItem(cartItem: CartItemEntity, newQuantity: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             if (newQuantity > 0) {
+                if(newQuantity > cartItem.SoLuongSP)
+                {
+                    cartDao.updateCartItem(cartItem.copy(quantity = cartItem.SoLuongSP))
+                }
                 cartDao.updateCartItem(cartItem.copy(quantity = newQuantity))
             } else {
                 cartDao.deleteCartItem(cartItem)
