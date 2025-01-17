@@ -79,77 +79,77 @@ fun ProductDetailScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {
+                AsyncImage(
+                    model = product!!.HinhSp,  // Ảnh sản phẩm
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AsyncImage(
-                        model = product!!.HinhSp,  // Ảnh sản phẩm
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                    Column {
+                        Text(
+                            "${product!!.DonGia.toInt()}đ",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFF4B12)
+                        )
+                        Text(
+                            "Giá gốc: 100.000đ",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textDecoration = TextDecoration.LineThrough,
+                            color = Color.Gray
+                        )
+                    }
+                    Text(
+                        "-25%",
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFFF4B12),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color.White
                     )
                 }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                "${product!!.DonGia.toInt()}đ",
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFF4B12)
-                            )
-                            Text(
-                                "Giá gốc: 100.000đ",
-                                style = MaterialTheme.typography.bodyMedium,
-                                textDecoration = TextDecoration.LineThrough,
-                                color = Color.Gray
-                            )
-                        }
-                        Text(
-                            "-25%",
-                            modifier = Modifier
-                                .background(
-                                    color = Color(0xFFFF4B12),
-                                    shape = RoundedCornerShape(4.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = Color.White
-                        )
-                    }
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    product!!.TenSp,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Text(
-                        product!!.TenSp,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Mô tả sản phẩm:",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Text(
-                        "Mô tả sản phẩm:",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                Text(
+                    product!!.MoTa,
+                    style = MaterialTheme.typography.bodyLarge
+                )
 
-                    Text(
-                        product!!.MoTa,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
 //                    Button(
 //                        onClick = {
@@ -170,37 +170,29 @@ fun ProductDetailScreen(
 //                    ) {
 //                        Text("Thêm vào giỏ hàng")
 //                    }
-                    Button(
-                        onClick = {
-                            val cartItem = CartItemEntity(
-                                MaSp = product!!.MaSp,
-                                name = product!!.TenSp,
-                                price = product!!.DonGia,
-                                quantity = 1,
-                                imageUrl = product!!.HinhSp,
-<<<<<<< HEAD
-                                SoLuongSP = product!!.SoLuong
-=======
-<<<<<<< HEAD
-                                SoLuongSP = product!!.SoLuong,
-=======
-                                SoLuongSP = product!!.SoLuong
->>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
-                            )
-                            CoroutineScope(Dispatchers.IO).launch {
-                                CartManager(context).addToCart(cartItem)
-                            }
-                            navController.navigate(Screen.Cart.route)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
-                    ) {
-                        Text("Thêm vào giỏ hàng")
-                    }
+                Button(
+                    onClick = {
+                        val cartItem = CartItemEntity(
+                            MaSp = product!!.MaSp,
+                            name = product!!.TenSp,
+                            price = product!!.DonGia,
+                            quantity = 1,
+                            imageUrl = product!!.HinhSp,
+                            SoLuongSP = product!!.SoLuong
+                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            CartManager(context).addToCart(cartItem)
+                        }
+                        navController.navigate(Screen.Cart.route)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
+                ) {
+                    Text("Thêm vào giỏ hàng")
+                }
 
+            }
         }
     }
-}
 }
 

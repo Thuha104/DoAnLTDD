@@ -1,10 +1,7 @@
 package com.example.doanltd.View
 
-<<<<<<< HEAD
-import CapNhatDonHangRequest
+import CapNhapDonHangRequest
 import HoaDonChiTietRequest
-=======
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import HoaDonRequest
 import LoaiSP
 import RetrofitInstance
@@ -14,18 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-<<<<<<< HEAD
 import com.example.doanltd.data.ChiTietHoaDon
 import com.example.doanltd.data.HoaDon
 import com.example.doanltd.data.SanPham
-=======
-import com.example.doanltd.data.HoaDon
-import com.example.doanltd.data.SanPham
-<<<<<<< HEAD
-import kotlinx.coroutines.flow.MutableSharedFlow
-=======
->>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -45,12 +33,9 @@ class SanPhamViewModel :ViewModel(){
     var hoadons by mutableStateOf<List<HoaDon>>(emptyList())
         private set
 
-<<<<<<< HEAD
     var chitiethoadons by mutableStateOf<List<ChiTietHoaDon>>(emptyList())
         private set
 
-=======
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
     var isLoading by mutableStateOf(true)
         private set
 
@@ -108,30 +93,6 @@ class SanPhamViewModel :ViewModel(){
         }
     }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-
-    private val _hoadonthanhcong = MutableStateFlow<Boolean?>(value = null)
-    val hoadonthanhcong:StateFlow<Boolean?> = _hoadonthanhcong
-
-    private val _hoadonthongbao = MutableStateFlow<String?>(value = null)
-    val hoadonthongbao:StateFlow<String?> = _hoadonthongbao
-
-    private val _MaHd = MutableStateFlow<String?>(value = null)
-    val MaHd:StateFlow<String?> = _MaHd
-
-    suspend fun themhoadon(MaNgD:String, TongTien:Double, DiaChi:String){
-        try {
-            val response = RetrofitInstance.api.themhoadon(HoaDonRequest(MaNgD,TongTien,MaNgD))
-            _hoadonthanhcong.value=response.success
-            _hoadonthongbao.value=response.message
-            _MaHd.value=response.MaHD
-            }
-        catch (e:Exception){
-
-=======
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
     private fun fetchHoaDon() {
         viewModelScope.launch {
             try {
@@ -146,27 +107,20 @@ class SanPhamViewModel :ViewModel(){
                 errorMessage = e.message
                 e.printStackTrace()
             }
-<<<<<<< HEAD
-=======
->>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
         }
     }
 
 
-<<<<<<< HEAD
-      fun fetchChiTietHoaDon(maHD:String) {
+    fun fetchChiTietHoaDon(maHD:String) {
         viewModelScope.launch {
             try {
                 isLoading = true
                 // Lấy dữ liệu từ API
                 val response = RetrofitInstance.api.getChiTietHoaDon(maHD)
                 chitiethoadons = response
-
                 isLoading = false
             } catch (e: Exception) {
                 // Xử lý lỗi và cập nhật thông báo lỗi
-                Log.d(String.toString(),"$maHD")
                 isLoading = false
                 errorMessage = e.message
                 e.printStackTrace()
@@ -174,11 +128,6 @@ class SanPhamViewModel :ViewModel(){
         }
     }
 
-=======
-
-<<<<<<< HEAD
-=======
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
     // success
     private val _hoadonthanhcong = MutableStateFlow<Boolean?>(null)
     val hoadonthanhcong: StateFlow<Boolean?> = _hoadonthanhcong
@@ -195,7 +144,6 @@ class SanPhamViewModel :ViewModel(){
     suspend fun themhoadon(MaNgD:String,TongTien:Double,DiaChi:String) {
         try {
             val response = RetrofitInstance.api.themhoadon(HoaDonRequest(MaNgD,TongTien,DiaChi))
-<<<<<<< HEAD
             _hoadonthanhcong.value = response.success
             _hoadonthongbao.value = response.message
             _MaHd.value = response.MaHD
@@ -223,33 +171,23 @@ class SanPhamViewModel :ViewModel(){
         }
     }
 
-    private val _capnhathoadonthanhcong = MutableStateFlow<Boolean?>(null)
-    val capnhathoadonthanhcong: StateFlow<Boolean?> = _capnhathoadonthanhcong
+
+    // success
+    private val _capnhaphoadonthanhcong = MutableStateFlow<Boolean?>(null)
+    val capnhaphoadonthanhcong: StateFlow<Boolean?> = _capnhaphoadonthanhcong
 
     // message
-    private val _capnhathoadonthongbao = MutableStateFlow<String?>(null)
-    val capnhathoadonthongbao: StateFlow<String?> = _capnhathoadonthongbao
+    private val _capnhaphoadonthongbao = MutableStateFlow<String?>(null)
+    val capnhaphoadonthongbao: StateFlow<String?> = _capnhaphoadonthongbao
 
-    suspend fun capnhathoadon(MaHD:String,TrangThai:String) {
+    suspend fun capnhaphoadon(MaHD:String,TrangThai:String) {
         try {
-            val response = RetrofitInstance.api.capnhathoadon(CapNhatDonHangRequest(MaHD,TrangThai))
-            _capnhathoadonthanhcong.value = response.success
-            _capnhathoadonthongbao.value = response.message
+            val response = RetrofitInstance.api.capnhapdonhang(CapNhapDonHangRequest(MaHD,TrangThai))
+            _capnhaphoadonthanhcong.value = response.success
+            _capnhaphoadonthongbao.value = response.message
 
         } catch (e: Exception) {
             Log.e("API", "Lỗi đăng ký: ${e.message}")
         }
     }
-=======
-            _hoadonthanhcong.value = response.status
-            _hoadonthongbao.value = response.message
-            _MaHd.value = response.MaHD
-        } catch (e: Exception) {
-            Log.e("API", "Lỗi đăng ký: ${e.message}")
-        }
-    }
->>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
-
-
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 }

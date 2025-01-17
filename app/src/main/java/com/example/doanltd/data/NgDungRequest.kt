@@ -27,22 +27,6 @@ data class LoginReponse(
     val user:NgDungEntity
 )
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-
-data class HoaDonRequest(
-    @SerializedName("MaNgD") val MaNgD : String,
-    @SerializedName("TongTien") val TongTien: Double,
-    @SerializedName("DiaChi") val Diachi: String,
-)
-
-data class HoaDonReponse(
-    val success: Boolean,
-    val message:String,
-    val MaHD:String
-=======
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 // phan hoa them hoa don
 data class HoaDonRequest(
     @SerializedName("MaNgD") val MaNgD: String,
@@ -50,18 +34,11 @@ data class HoaDonRequest(
     @SerializedName("DiaChi") val DiaChi: String)
 
 data class HoaDonReponse(
-<<<<<<< HEAD
     val success:Boolean,
     val message:String,
     val MaHD:String
 )
 
-=======
-    val status:Boolean,
-    val message:String,
-    val MaHD:String
-)
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 data class UpdatePasswordRequest(
     @SerializedName("MaNgD") val MaNgD: String,
     @SerializedName("MatKhauCu") val MatKhauCu: String,
@@ -71,7 +48,6 @@ data class UpdatePasswordRequest(
 data class UpdatePasswordResponse(
     val message: String,
     val success: Boolean
-<<<<<<< HEAD
 )
 
 // phan hoa them chi tiet hoa don
@@ -87,16 +63,12 @@ data class HoaDonChiTietReponse(
     val message:String,
 )
 
-data class CapNhatDonHangRequest(
+data class CapNhapDonHangRequest(
     @SerializedName("MaHD") val MaHD: String,
-    @SerializedName("TrangThaiMoi") val TrangThai:String,
-
+    @SerializedName("TrangThaiMoi") val TrangThai: String,
 )
 
-data class CapNhatDonHangReponse(
+data class CapNhapDonHangReponse(
     val success:Boolean,
     val message:String,
-=======
->>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
->>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 )

@@ -1,6 +1,11 @@
+package com.example.doanltd.Screen
+
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Adjust
 import androidx.compose.material.icons.filled.Home
@@ -8,35 +13,42 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
 import com.example.doanltd.Navigation.Screen
+
 import com.example.doanltd.R
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.NumberFormat
+import java.util.Locale
+
+import com.example.doanltd.View.SanPhamViewModel
+import com.example.doanltd.data.HoaDon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminScreen(navController: NavController) {
-    val orders = remember {
-        mutableStateListOf(
-            Order("1", "Người Dùng 1", "[COMBO 6] Bánh Tráng Phơi Sương Sốt Tắc Muối Ruốc Hành Phi", 65000.0, 2, OrderStatus.ChuaDuyet),
-            Order("2", "Người Dùng 2", "[COMBO 4] Bánh Tráng Phơi Sương Sốt Tắc Muối Ruốc Hành Phi", 45000.0, 1, OrderStatus.ChuaDuyet)
-        )
-    }
-
+fun AdminScreen(navController: NavController,viewModel: SanPhamViewModel = viewModel()) {
+    val hoaDons by remember { derivedStateOf { viewModel.hoadons } }
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context).ngDungDao()
+
+
 
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -59,7 +71,7 @@ fun AdminScreen(navController: NavController) {
             NavigationBar {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Adjust, contentDescription = "Home") },
-                    label = { Text("Home") },
+                    label = { Text("Đăng xuất") },
                     selected = true,
                     onClick = {  navController.navigate(Screen.Login.route) {
                         CoroutineScope(Dispatchers.IO).launch { user?.let { db.delete(it) } }
@@ -84,9 +96,18 @@ fun AdminScreen(navController: NavController) {
 //        ) {
 //            Text("Đăng Xuất")
 //        }
-        LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            items(orders) { order ->
-                OrderItem(order, navController)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(hoaDons) { hoadon ->
+                    OrderItemA(hoadon,navController,viewModel)
+                }
             }
         }
 
@@ -94,11 +115,47 @@ fun AdminScreen(navController: NavController) {
 }
 
 @Composable
-fun OrderItem(order: Order, navController: NavController) {
+private fun OrderItemA(
+    hoaDon: HoaDon,
+    navController: NavController,
+    viewModel: SanPhamViewModel = viewModel()
+) {
+    val formattedPrice = NumberFormat.getInstance(Locale("vi", "VN")).format(hoaDon.TongTien)
+    var showPopup by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val capnhaphoadonthanhcong by viewModel.capnhaphoadonthanhcong.collectAsState()
+    val capnhaphoadonthongbao by viewModel.capnhaphoadonthongbao.collectAsState()
+    if (showPopup) {
+        oderPopup(hoaDon = hoaDon, onDismiss = { showPopup = false },viewModel)
+    }
+
+    if (showPopup) {
+        oderPopup(hoaDon = hoaDon, onDismiss = { showPopup = false },viewModel)
+    }
+    LaunchedEffect(capnhaphoadonthongbao){
+        capnhaphoadonthanhcong?.let {
+            if(it)
+            {
+                // thành công
+                Toast.makeText( context,"$capnhaphoadonthongbao", Toast.LENGTH_SHORT).show()
+                //reaload
+                navController.navigate("admin")
+            }
+            else
+            {
+                //faild
+                Toast.makeText( context,"$capnhaphoadonthongbao", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                showPopup = true
+                viewModel.fetchChiTietHoaDon(hoaDon.MaHD) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -113,66 +170,137 @@ fun OrderItem(order: Order, navController: NavController) {
                     .padding(end = 8.dp)
             ) {
                 Text(
-                    text = order.productName,
+                    text = "Mã đơn: ${hoaDon.MaHD}",
                     fontWeight = FontWeight.Bold,
                     maxLines = 2
                 )
                 Text(
-                    text = "${order.price}đ",
+                    text = "Tổng tiền: $formattedPrice đ",
                     color = Color.Red
                 )
                 Text(
-                    text = "SL: ${order.quantity}"
+                    text = "Trạng thái: ${hoaDon.TrangThai}",
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Blue
                 )
-                Text(
-                    text = "Status: ${order.status.description}",
-                    fontStyle = FontStyle.Italic
-                )
-            }
-            var expanded by remember { mutableStateOf(false) }
-            val statusOptions = OrderStatus.values().filter { it != OrderStatus.ChuaDuyet }
 
-            Box {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "Change Order Status"
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    statusOptions.forEach { status ->
-                        DropdownMenuItem(
-                            text = { Text(status.description) },
-                            onClick = {
-                                order.status = status
-                                expanded = false
-                                // TODO: Update order status in ViewModel/Database
-                            }
-                        )
+                // Hiển thị nút dựa vào trạng thái đơn hàng
+                Row(modifier = Modifier.padding(top = 8.dp)) {
+                    // Nút Hủy đơn (chỉ hiển thị khi đơn ở trạng thái "Đã đặt" hoặc "Đặt hàng thành công")
+                    if (hoaDon.TrangThai == "Đã đặt" || hoaDon.TrangThai == "Đặt hàng thành công") {
+                        Button(
+                            onClick = { CoroutineScope(Dispatchers.IO).launch {
+                                viewModel.capnhaphoadon(hoaDon.MaHD,"Đã hủy")
+                            } },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        ) {
+                            Text("Hủy đơn")
+                        }
                     }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Nút Cập nhật trạng thái (Chỉ hiển thị nếu chưa "Đã giao" và chưa "Đã hủy" và đơn chờ duyệt "Đã đặt")
+                    if (hoaDon.TrangThai != "Đã giao" && hoaDon.TrangThai != "Đã hủy" && hoaDon.TrangThai != "Đã đặt") {
+                        Button(
+                            onClick = {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val nextStatus = when (hoaDon.TrangThai) {
+                                        "Đặt hàng thành công" -> "Đang giao"
+                                        "Đang giao" -> "Đã giao"
+                                        else -> hoaDon.TrangThai // Giữ nguyên nếu không nằm trong điều kiện
+                                    }
+                                    viewModel.capnhaphoadon(hoaDon.MaHD, nextStatus)
+                                }}
+                        ) {
+                            Text("Cập nhật")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Nút Duyệt đơn (chỉ hiển thị nếu đơn hàng đang ở trạng thái "Đã đặt")
+                    if (hoaDon.TrangThai == "Đã đặt") {
+                        Button(
+                            onClick = { CoroutineScope(Dispatchers.IO).launch {
+                                viewModel.capnhaphoadon(hoaDon.MaHD,"Đặt hàng thành công")
+                            } },
+                        ) {
+                            Text("Duyệt đơn")
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+}
+
+
+@Composable
+private fun oderPopup(hoaDon: HoaDon, onDismiss: () -> Unit,viewModel: SanPhamViewModel = viewModel()) {
+    val chitiethoaDons by remember { derivedStateOf { viewModel.chitiethoadons } }
+    val sanphams by remember { derivedStateOf { viewModel.posts } }
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Chi tiết đơn hàng ${hoaDon.MaHD}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                LazyColumn {
+                    items(chitiethoaDons) { chiTiet ->
+                        val sanpham = sanphams.find { it.MaSp == chiTiet.MaSp }
+                        if (sanpham != null) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AsyncImage(
+                                    model = sanpham.HinhSp,
+                                    contentDescription = "Hình ảnh sản phẩm",
+                                    modifier = Modifier.size(80.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(start = 16.dp)
+                                ) {
+                                    Text(text = sanpham.TenSp, fontWeight = FontWeight.Bold)
+                                    Text(text = "Giá: ${chiTiet.DonGia} VND")
+                                    Text(text = "Số lượng: ${chiTiet.SLMua}")
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Đóng")
                 }
             }
         }
     }
 }
 
-data class Order(
-    val id: String,
-    val tenNgD: String,
-    val productName: String,
-    val price: Double,
-    val quantity: Int,
-    var status: OrderStatus = OrderStatus.ChuaDuyet
-)
-
-enum class OrderStatus(val description: String) {
-    ChuaDuyet("Chưa Duyệt"),
-    DuyetDon("Duyệt Đơn"),
-    HuyDon("Hủy Đơn"),
-    DangGiao("Đang Giao"),
-    DaGiao("Đã Giao"),
-    ChuaGiao("Chưa Giao")
-}
