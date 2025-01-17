@@ -1,7 +1,10 @@
 package com.example.doanltd.Screen
 
+<<<<<<< HEAD
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+=======
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,10 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+<<<<<<< HEAD
 import androidx.compose.ui.layout.ContentScale
+=======
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,8 +34,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.NumberFormat
 import java.util.Locale
+<<<<<<< HEAD
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+=======
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,8 +49,11 @@ fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel =
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val db = AppDatabase.getDatabase(context).ngDungDao()
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val userList = db.getAll()
@@ -83,13 +94,70 @@ fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel =
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(filteredHoaDons) { hoadon ->
+<<<<<<< HEAD
                     OrderItem(hoadon, navController,viewModel)
+=======
+                    OrderItem(hoadon, navController)
                 }
             }
         }
     }
 }
 
+@Composable
+private fun OrderItem(hoaDon: HoaDon, navController: NavController) {
+    val formattedPrice = NumberFormat.getInstance(Locale("vi", "VN")).format(hoaDon.TongTien)
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // Trạng thái đơn hàng
+            Text(
+                text = "Trạng thái: ${hoaDon.TrangThai}",
+                color = Color(0xFFFF424F),
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Địa chỉ giao hàng
+            Text(text = "Địa chỉ: ${hoaDon.DiaChi}")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Tổng tiền
+            Text(
+                text = "Tổng tiền: $formattedPrice",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Nút hủy đơn hàng (hiển thị nếu trạng thái là "Đã đặt" hoặc "Đặt hàng thành công")
+            if (hoaDon.TrangThai == "Đã đặt" || hoaDon.TrangThai == "Đặt hàng thành công") {
+                Button(
+                    onClick = { huyDonHang(hoaDon.MaHD) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Hủy đơn hàng", color = Color.White)
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
+                }
+            }
+        }
+    }
+}
+
+<<<<<<< HEAD
 @Composable
 private fun OrderItem(hoaDon: HoaDon, navController: NavController,viewModel: SanPhamViewModel = viewModel()) {
     val formattedPrice = NumberFormat.getInstance(Locale("vi", "VN")).format(hoaDon.TongTien)
@@ -239,3 +307,9 @@ private fun OrderDetailsPopup(hoaDon: HoaDon, onDismiss: () -> Unit,viewModel: S
 }
 
 
+=======
+// Hàm xử lý hủy đơn hàng
+private fun huyDonHang(maHD: String) {
+    // TODO: Thêm logic gọi API hoặc cập nhật trạng thái đơn hàng trong ViewModel
+}
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16

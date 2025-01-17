@@ -76,6 +76,15 @@ class CartManager(context: Context) {
     suspend fun addToCart(cartItem: CartItemEntity) = withContext(Dispatchers.IO) {
         val existingItem = cartDao.getCartItemById(cartItem.MaSp)
         if (existingItem != null)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        {//kiem tra so luong của sản phẩm >= so sl sp đó trong giỏ hàng
+            val updatedQuantity = existingItem.quantity + cartItem.quantity
+
+            if (updatedQuantity<=cartItem.SoLuongSP){
+=======
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
         {
             //kiem tra so luong của sản phẩm >= so sl sp đó trong giỏ hàng
             var updatedQuantity = existingItem.quantity + cartItem.quantity
@@ -85,9 +94,13 @@ class CartManager(context: Context) {
                 updatedQuantity = cartItem.SoLuongSP
                 cartDao.updateCartItem(existingItem.copy(quantity = updatedQuantity))
             }
+<<<<<<< HEAD
+=======
+>>>>>>> bcd2a864b3006d63cba77752185182e112377e7b
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
             cartDao.updateCartItem(existingItem.copy(quantity = updatedQuantity))
+            }
         } else {
-            // If the item doesn't exist, insert it
             cartDao.insertCartItem(cartItem)
         }
     }

@@ -1,7 +1,14 @@
-package com.example.doanltd.Screen
+    package com.example.doanltd.Screen
 
 
+<<<<<<< HEAD
 import android.widget.Toast
+=======
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,10 +26,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+<<<<<<< HEAD
+=======
+import androidx.compose.ui.window.Dialog
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.doanltd.AppDatabase
+<<<<<<< HEAD
+=======
+import com.example.doanltd.Navigation.Screen
+import com.example.doanltd.R
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 import com.example.doanltd.View.SanPhamViewModel
@@ -32,9 +48,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel = viewModel()) {
+<<<<<<< HEAD
     var selectedPaymentMethod by remember { mutableStateOf<String?>(null) }
     var showAddressDialog by remember { mutableStateOf(false) }
     var showResultDialog by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
@@ -69,18 +86,41 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
     }
 
 
+=======
+        var selectedPaymentMethod by remember { mutableStateOf<String?>(null) }
+        var showAddressDialog by remember { mutableStateOf(false) }
+        var showResultDialog by remember { mutableStateOf<Pair<Boolean, String>?>(null) }
+        var customerNote by remember { mutableStateOf("") }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Thông tin đơn hàng") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+        val context = LocalContext.current
+        val db = remember { AppDatabase.getDatabase(context) }
+        val cartDao = remember { db.cartDao() }
+        val cartItems = remember { mutableStateOf<List<CartItemEntity>>(emptyList()) }
+        val totalAmount = remember { mutableStateOf(0.0) }
+        var showError by remember { mutableStateOf(false) }
+
+        var user by remember { mutableStateOf<NgDungEntity?>(null) }
+        val dbdao = AppDatabase.getDatabase(context).ngDungDao()
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
+
+        val hoadonthanhcong by viewModel.hoadonthanhcong.collectAsState()
+        val hoadonthongbao by viewModel.hoadonthongbao.collectAsState()
+        val MaHd by viewModel.MaHd.collectAsState()
+
+        LaunchedEffect(Unit) {
+            val items = cartDao.getAllCartItems()
+            cartItems.value = items
+            totalAmount.value = items.sumOf { it.price * it.quantity }
+            CoroutineScope(Dispatchers.IO).launch {
+                val userList = dbdao.getAll()
+                if (userList.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        user = userList[0]
                     }
                 }
-            )
+            }
         }
+<<<<<<< HEAD
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -161,22 +201,116 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                             color = Color.Red
                         )
                         Text("${totalAmount.value} VND",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Red
-                        )
+=======
+
+
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Thông tin đơn hàng") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+            ) {
+
+                // Order Details
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(cartItems.value) { cartItem ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AsyncImage(
+                                model = cartItem.imageUrl,
+                                contentDescription = "Hình ảnh sản phẩm",
+                                modifier = Modifier.size(80.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 16.dp)
+                            ) {
+                                Text(text = cartItem.name, fontWeight = FontWeight.Bold)
+                                Text(text = "Giá: ${cartItem.price} VND")
+                                Text(text = "Số lượng: ${cartItem.quantity}")
+                            }
+                        }
                     }
                 }
-            }
-
-            // Payment Methods
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                // Order Summary
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            "Tóm tắt đơn hàng",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Tiền sản phẩm:")
+                            Text("${totalAmount.value} VND")
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Vận chuyển:")
+                            Text(
+                                "0đ",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                )
+                            )
+                        }
+                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Tổng:",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red
+                            )
+                            Text("${totalAmount.value} VND",
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red
+                            )
+                        }
+                    }
+                }
+
+                // Payment Methods
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+<<<<<<< HEAD
                     Text(
                         "Hình thức thanh toán: khi nhận hàng",
                         style = MaterialTheme.typography.titleMedium,
@@ -184,9 +318,58 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                }
-            }
+=======
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            "Hình thức thanh toán: khi nhận hàng",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
 
+                    }
+                }
+
+                // Customer Note
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            "Địa chỉ :",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = customerNote,
+                            onValueChange = {
+                                customerNote = it
+                                showError = false
+                            },
+                            label = { Text("Nhập địa chỉ.......") },
+                            modifier = Modifier.fillMaxWidth(),
+                            isError = showError
+                        )
+                        if (showError) {
+                            Text(
+                                text = "Vui lòng nhập địa chỉ!",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
+                }
+
+<<<<<<< HEAD
             // Customer Note
             Card(
                 modifier = Modifier
@@ -258,6 +441,46 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                         MaSp = cartItem.MaSp,
                         SLMua = cartItem.quantity.toDouble()
                     )
+=======
+                // Order Button
+                Button(
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.themhoadon(user!!.MaNgD, totalAmount!!.value, customerNote)
+                        }
+                        if (customerNote.isBlank()) {
+                            // Hiển thị lỗi nếu địa chỉ chưa được nhập
+                            showError = true
+                        } else {
+                            // Điều hướng sang màn hình "Xem đơn hàng" nếu địa chỉ hợp lệ
+                            navController.navigate("xem_don_hang")
+                        }
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Đặt hàng")
+                }
+            }
+        }
+        LaunchedEffect(hoadonthanhcong) {
+            hoadonthanhcong?.let {
+                if (it) {
+                    //delete giỏ hàng đã đặt
+                    CoroutineScope(Dispatchers.IO).launch {
+                        cartDao.deleteAllCartItems()
+                    }
+                    // đúng
+                    navController.navigate("xem_don_hang")
+                }
+                else{
+                    Toast.makeText( context,"$hoadonthongbao!", Toast.LENGTH_SHORT).show()
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
                 }
                 // đúng
                 navController.navigate("xem_don_hang")
@@ -270,8 +493,14 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                 Toast.makeText( context,"$hoadonthongbao", Toast.LENGTH_SHORT).show()
             }
         }
+<<<<<<< HEAD
     }
 
 }
 
+=======
+
+    }
+
+>>>>>>> 8d37676d83206b59e83dc1048259236db68e9a16
 
