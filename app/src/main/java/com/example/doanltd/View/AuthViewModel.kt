@@ -18,6 +18,7 @@ class AuthViewModel : ViewModel(){
     val apiService: ApiService = RetrofitInstance.api
 
     private val _dangKyThanhCong = MutableStateFlow<Boolean?>(null)
+<<<<<<< HEAD
     val dangKyThanhCong: StateFlow<Boolean?> get() = _dangKyThanhCong
 
     private val _dangKyError = MutableStateFlow<String?>(null)
@@ -57,6 +58,18 @@ class AuthViewModel : ViewModel(){
                 _dangKyThanhCong.value = false
                 _dangKyError.value = "Lỗi kết nối, vui lòng thử lại sau!"
             }
+=======
+    val dangKyThanhCong: StateFlow<Boolean?> = _dangKyThanhCong
+
+    suspend fun dangKyNguoiDung(tenNgD: String, sdt: String, tkNgD: String, matKhauNgD: String,Email:String) {
+        try {
+            val response = apiService.dangky(RegisterRequest(tenNgD, sdt, tkNgD, matKhauNgD,Email))
+            Log.d("API", "Đăng ký thành công: ${response}")
+            // Cập nhật trạng thái đăng ký
+            _dangKyThanhCong.value = response.status
+        } catch (e: Exception) {
+            Log.e("API", "Lỗi đăng ký: ${e.message}")
+>>>>>>> 19d1ff738a8f3c42e04a8e26108e8d30d4869bd8
         }
     }
 

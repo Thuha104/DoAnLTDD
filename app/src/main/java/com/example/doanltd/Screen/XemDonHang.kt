@@ -64,7 +64,11 @@ fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel =
             TopAppBar(
                 title = { Text("Danh sách đơn hàng", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
+<<<<<<< HEAD
                     IconButton(onClick = { navController.navigate(Screen.Profile.route)}) {
+=======
+                    IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
+>>>>>>> 19d1ff738a8f3c42e04a8e26108e8d30d4869bd8
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
                 }

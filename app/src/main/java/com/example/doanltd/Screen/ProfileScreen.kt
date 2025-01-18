@@ -32,10 +32,15 @@ import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+<<<<<<< HEAD
 fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
+=======
+fun ProfileScreen(navController: NavController) {
+    //biến trạng thái LƯU thông tin ng.dung
+>>>>>>> 19d1ff738a8f3c42e04a8e26108e8d30d4869bd8
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context).ngDungDao()
+    val db = AppDatabase.getDatabase(context).ngDungDao() // lấy DAO để truy vấn CSDL
 
     var showDialog by remember { mutableStateOf(false) }
     var updatedName by remember { mutableStateOf("") }
@@ -46,13 +51,17 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewM
 
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            val userList = db.getAll()
+            val userList = db.getAll() // lấy DS ngdung từ CSDL
             if (userList.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
+<<<<<<< HEAD
                     user = userList[0]
                     updatedName = user?.TenNgD ?: ""
                     updatedPhone = user?.SDT ?: ""
                     updatedEmail = user?.Email ?: ""
+=======
+                    user = userList[0] // lấy ng.dung đầu tiên
+>>>>>>> 19d1ff738a8f3c42e04a8e26108e8d30d4869bd8
                 }
             }
         }
@@ -101,6 +110,10 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewM
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+<<<<<<< HEAD
+=======
+            // Hiện image
+>>>>>>> 19d1ff738a8f3c42e04a8e26108e8d30d4869bd8
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -116,6 +129,7 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewM
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // hiện TÊN & mô tả h.sơ
             Text(
                 "User Profile",
                 style = MaterialTheme.typography.titleMedium,
@@ -123,7 +137,7 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewM
             )
 
             Text(
-                "Come and bring me :)",
+                "Come and buy my products ! )",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
@@ -141,6 +155,10 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewM
             )
             Spacer(modifier = Modifier.height(24.dp))
 
+<<<<<<< HEAD
+=======
+            // Lịch Su Don Hang - Don Hang
+>>>>>>> 19d1ff738a8f3c42e04a8e26108e8d30d4869bd8
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

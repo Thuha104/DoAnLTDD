@@ -136,7 +136,7 @@ fun SettingScreen(navController: NavController) {
                     user?.let {
                         ChangePasswordDialog(
                             it,
-                            onDismiss = { showChangePasswordPopup = false },
+                            onDismiss = { showChangePasswordPopup = false }, //khi người dùng đoóng hộp thoại
                             onMessageChange = { msg, success ->
                                 message = msg
                                 isSuccess = success
