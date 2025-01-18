@@ -8,24 +8,6 @@ import androidx.room.Query
 
 import androidx.room.Update
 
-//@Dao
-//interface CartDao {
-//
-//    @Query("SELECT * FROM cart_items")
-//    suspend fun getAllCartItems(): List<CartItem>
-//
-//    @Insert
-//    suspend fun insertCartItem(cartItem: CartItem)
-//
-//    @Update
-//    suspend fun updateCartItem(cartItem: CartItem)
-//
-//    @Delete
-//    suspend fun deleteCartItem(cartItem: CartItem)
-//
-//
-//}
-
 import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
 
 

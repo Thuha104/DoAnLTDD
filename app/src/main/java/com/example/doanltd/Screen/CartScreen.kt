@@ -100,6 +100,12 @@ fun CartScreen(navController: NavHostController) {
                     onClick = { navController.navigate(Screen.Home.route) }
                 )
                 NavigationBarItem(
+                    icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
+                    label = { Text("Tin nhắn") },
+                    selected = false,
+                    onClick = { navController.navigate(Screen.Message.route) }
+                )
+                NavigationBarItem(
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
                     label = { Text("Giỏ Hàng") },
                     selected = true,
@@ -110,6 +116,12 @@ fun CartScreen(navController: NavHostController) {
                     label = { Text("Thông Tin") },
                     selected = false,
                     onClick = { navController.navigate(Screen.Profile.route) }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
+                    label = { Text("Cài Đặt") },
+                    selected = false,
+                    onClick = { navController.navigate(Screen.Setting.route) }
                 )
             }
         }

@@ -43,6 +43,7 @@ fun HomeScreen(navController: NavController, viewModel: SanPhamViewModel = viewM
     var searchQuery by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) }
     var resetHome by remember { mutableStateOf(false) }
+
     val sanPhams by remember { derivedStateOf { viewModel.posts } }
     val loaiSps by remember { derivedStateOf { viewModel.loaisanphams } }
 

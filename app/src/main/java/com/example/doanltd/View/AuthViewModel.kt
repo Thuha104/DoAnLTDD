@@ -16,9 +16,10 @@ class AuthViewModel : ViewModel(){
 
     private val _dangKyThanhCong = MutableStateFlow<Boolean?>(null)
     val dangKyThanhCong: StateFlow<Boolean?> = _dangKyThanhCong
-    suspend fun dangKyNguoiDung(tenNgD: String, sdt: String, tkNgD: String, matKhauNgD: String) {
+
+    suspend fun dangKyNguoiDung(tenNgD: String, sdt: String, tkNgD: String, matKhauNgD: String,Email:String) {
         try {
-            val response = apiService.dangky(RegisterRequest(tenNgD, sdt, tkNgD, matKhauNgD))
+            val response = apiService.dangky(RegisterRequest(tenNgD, sdt, tkNgD, matKhauNgD,Email))
             Log.d("API", "Đăng ký thành công: ${response}")
             // Cập nhật trạng thái đăng ký
             _dangKyThanhCong.value = response.status

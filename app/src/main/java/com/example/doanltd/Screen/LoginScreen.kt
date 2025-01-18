@@ -37,31 +37,12 @@ import kotlinx.coroutines.withContext
 fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.lifecycle.viewmodel.compose.viewModel()) {
     var TKNgD by remember { mutableStateOf("") }
     var MatKhauNgD by remember { mutableStateOf("") }
+
     val dangNhapThanhCong by viewModel.dangNhapThanhCong.collectAsState()
     val dulieunguoidung by viewModel.duLieuNguoiDung.collectAsState()
+
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context).ngDungDao()
-
-//    val isChecked = remember { mutableStateOf(false) }
-//
-//    LaunchedEffect(isChecked.value) {
-//        if (!isChecked.value) {
-//            // Di chuyển việc truy vấn vào coroutine
-//            CoroutineScope(Dispatchers.IO).launch {
-//                val userList = db.getAll()
-//                if (userList.isNotEmpty()) {
-//                    withContext(Dispatchers.Main) {
-//                        navController.navigate("home") // Chuyển về màn hình home
-//                    }
-//                } else {
-//                    withContext(Dispatchers.Main) {
-//                        navController.navigate("login") // Chuyển về màn hình đăng nhập
-//                    }
-//                }
-//            }
-//            isChecked.value = true // Đánh dấu đã kiểm tra xong, không chạy lại nữa
-//        }
-//    }
 
     Column(
         modifier = Modifier
@@ -156,13 +137,7 @@ fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.
                 }
             )
 
-            Text(
-                "Quên mật khẩu?",
-                color = Color(0xFFFF4B12),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(vertical = 8.dp)
-            )
+
 
             Row(
                 modifier = Modifier.padding(vertical = 16.dp),
@@ -209,7 +184,7 @@ fun LoginScreen(navController: NavController,viewModel: AuthViewModel= androidx.
                         user.TrangThai,
                         user.ChucVu
                     )
-                    if(user.ChucVu.equals("NguoiDung"))
+                    if(user.ChucVu.equals("NguoiDung") && user.TrangThai == 1)
                     {
                         navController.navigate("home")
                     }

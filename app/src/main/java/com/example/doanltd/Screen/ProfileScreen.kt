@@ -30,17 +30,18 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
+    //biến trạng thái LƯU thông tin ng.dung
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context).ngDungDao()
+    val db = AppDatabase.getDatabase(context).ngDungDao() // lấy DAO để truy vấn CSDL
 
     LaunchedEffect(Unit) {
         // Di chuyển việc truy vấn vào coroutine
         CoroutineScope(Dispatchers.IO).launch {
-            val userList = db.getAll()
+            val userList = db.getAll() // lấy DS ngdung từ CSDL
             if (userList.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
-                    user = userList[0]
+                    user = userList[0] // lấy ng.dung đầu tiên
                 }
             }
         }
@@ -94,7 +95,7 @@ fun ProfileScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile Image
+            // Hiện image
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -110,6 +111,7 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // hiện TÊN & mô tả h.sơ
             Text(
                 "User Profile",
                 style = MaterialTheme.typography.titleMedium,
@@ -117,7 +119,7 @@ fun ProfileScreen(navController: NavController) {
             )
 
             Text(
-                "Come and bring me :)",
+                "Come and buy my products ! )",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
@@ -144,7 +146,7 @@ fun ProfileScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // New section for Order History and Orders icons
+            // Lịch Su Don Hang - Don Hang
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

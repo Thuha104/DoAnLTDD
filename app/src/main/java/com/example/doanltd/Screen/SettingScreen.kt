@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.doanltd.AppDatabase
@@ -135,7 +136,7 @@ fun SettingScreen(navController: NavController) {
                     user?.let {
                         ChangePasswordDialog(
                             it,
-                            onDismiss = { showChangePasswordPopup = false },
+                            onDismiss = { showChangePasswordPopup = false }, //khi người dùng đoóng hộp thoại
                             onMessageChange = { msg, success ->
                                 message = msg
                                 isSuccess = success
@@ -189,14 +190,19 @@ fun SettingScreen(navController: NavController) {
 fun ChangePasswordDialog(
     user: NgDungEntity,
     navController: NavController,
-    db:NgDungDao,
-    onDismiss: () -> Unit,
+    db: NgDungDao, // thao tác với CSDL
+    onDismiss: () -> Unit, // gọi đóng hộp thoại
     onMessageChange: (String, Boolean) -> Unit,
     authViewModel: AuthViewModel
 ) {
     var MatKhauNgD by remember { mutableStateOf("") }
     var MatKhauMoi by remember { mutableStateOf("") }
     var NhapLaiMatKhau by remember { mutableStateOf("") }
+
+    // Trạng thái hiển thị hoặc ẩn mật khẩu
+    var isPasswordVisibleNgD by remember { mutableStateOf(false) }
+    var isPasswordVisibleMoi by remember { mutableStateOf(false) }
+    var isPasswordVisibleNhapLai by remember { mutableStateOf(false) }
 
     val capNhatMatKhauThanhCong by authViewModel.capNhatMatKhauThanhCong.collectAsState()
     val thongBaoCapNhatMatKhau by authViewModel.thongbaocapnhatmatkhau.collectAsState()
@@ -206,7 +212,7 @@ fun ChangePasswordDialog(
         val isSuccessful = capNhatMatKhauThanhCong
         if (isSuccessful != null) {
             onMessageChange(thongBaoCapNhatMatKhau ?: "", isSuccessful)
-            if (isSuccessful) {
+            if (isSuccessful) { // Nếu thành công, chuyển về đăng nhập
                 onDismiss() // Đóng hộp thoại trước khi chuyển trang
                 CoroutineScope(Dispatchers.IO).launch {
                     user.let { db.delete(it) }
@@ -224,29 +230,60 @@ fun ChangePasswordDialog(
         title = { Text("Đổi Mật Khẩu") },
         text = {
             Column {
+                // Mật khẩu cũ
                 OutlinedTextField(
                     value = MatKhauNgD,
                     onValueChange = { MatKhauNgD = it },
                     label = { Text("Mật khẩu cũ") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (isPasswordVisibleNgD) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisibleNgD = !isPasswordVisibleNgD }) {
+                            Icon(
+                                imageVector = if (isPasswordVisibleNgD) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
+                // Mật khẩu mới
                 OutlinedTextField(
                     value = MatKhauMoi,
                     onValueChange = { MatKhauMoi = it },
                     label = { Text("Mật khẩu mới") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (isPasswordVisibleMoi) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisibleMoi = !isPasswordVisibleMoi }) {
+                            Icon(
+                                imageVector = if (isPasswordVisibleMoi) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
+                // Nhập lại mật khẩu mới
                 OutlinedTextField(
                     value = NhapLaiMatKhau,
                     onValueChange = { NhapLaiMatKhau = it },
                     label = { Text("Nhập lại mật khẩu mới") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (isPasswordVisibleNhapLai) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisibleNhapLai = !isPasswordVisibleNhapLai }) {
+                            Icon(
+                                imageVector = if (isPasswordVisibleNhapLai) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth()
                 )

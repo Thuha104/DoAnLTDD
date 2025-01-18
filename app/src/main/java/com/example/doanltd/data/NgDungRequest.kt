@@ -6,7 +6,8 @@ data class RegisterRequest(
     @SerializedName("TenNgD") val TenNgD: String,
     @SerializedName("SDT") val sdt: String,
     @SerializedName("TKNgD") val tkNgD: String,
-    @SerializedName("MatKhauNgD") val matKhauNgD: String
+    @SerializedName("MatKhauNgD") val matKhauNgD: String,
+    @SerializedName("Email") val Email: String
 )
 
 // Dùng cho đăng nhập (chỉ cần tài khoản + mật khẩu)

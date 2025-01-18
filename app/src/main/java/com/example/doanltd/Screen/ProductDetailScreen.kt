@@ -151,25 +151,6 @@ fun ProductDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-//                    Button(
-//                        onClick = {
-//                            CoroutineScope(Dispatchers.IO).launch {
-//                                AppDatabase.getDatabase(context).cartDao().insertCartItem(
-//                                    CartItemEntity(
-//                                        name = product!!.TenSp,
-//                                        price = product!!.DonGia,
-//                                        quantity = 1,
-//                                        imageUrl = product!!.HinhSp
-//                                    )
-//                                )
-//                            }
-//                            navController.navigate(Screen.Cart.route)
-//                        },
-//                        modifier = Modifier.fillMaxWidth(),
-//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4B12))
-//                    ) {
-//                        Text("Thêm vào giỏ hàng")
-//                    }
                 Button(
                     onClick = {
                         val cartItem = CartItemEntity(

@@ -36,6 +36,7 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
     var TKNgD by remember { mutableStateOf("") }
     var MatKhauNgD by remember { mutableStateOf("") }
     var SDT by remember { mutableStateOf("") }
+    var Email by remember { mutableStateOf("") }
     val dangKyThanhCong by viewModel.dangKyThanhCong.collectAsState()
     val context = LocalContext.current
 
@@ -132,6 +133,22 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
             )
 
             OutlinedTextField(
+                value = Email,
+                onValueChange = { Email = it },
+                label = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color(0xFF6D88F4)
+                    )
+                }
+            )
+
+            OutlinedTextField(
                 value = SDT,
                 onValueChange = { SDT = it },
                 label = { Text("Số điện thoại") },
@@ -185,7 +202,8 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
                             tenNgD = TenNgD,
                             sdt = SDT,
                             tkNgD = TKNgD,
-                            matKhauNgD = MatKhauNgD
+                            matKhauNgD = MatKhauNgD,
+                            Email=Email
                         )
                     }
                 },
