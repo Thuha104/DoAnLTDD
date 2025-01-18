@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
@@ -28,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +38,7 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
     var TKNgD by remember { mutableStateOf("") }
     var MatKhauNgD by remember { mutableStateOf("") }
     var SDT by remember { mutableStateOf("") }
+    var Email by remember { mutableStateOf("") }
     val dangKyThanhCong by viewModel.dangKyThanhCong.collectAsState()
     val context = LocalContext.current
 
@@ -132,9 +135,26 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
             )
 
             OutlinedTextField(
+                value = Email,
+                onValueChange = { Email = it },
+                label = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color(0xFF6D88F4)
+                    )
+                }
+            )
+
+            OutlinedTextField(
                 value = SDT,
                 onValueChange = { SDT = it },
                 label = { Text("Số điện thoại") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
@@ -185,7 +205,8 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
                             tenNgD = TenNgD,
                             sdt = SDT,
                             tkNgD = TKNgD,
-                            matKhauNgD = MatKhauNgD
+                            matKhauNgD = MatKhauNgD,
+                            Email=Email
                         )
                     }
                 },
@@ -199,16 +220,18 @@ fun RegisterScreen(navController: NavController,viewModel: AuthViewModel = viewM
             }
         }
     }
-        // ⬇️ Đặt LaunchedEffect bên ngoài Column ⬇️
-        LaunchedEffect(dangKyThanhCong) {
-            dangKyThanhCong?.let {
-                if (it) {
-                    Toast.makeText( context,"Đăng ký thành công!", Toast.LENGTH_SHORT).show()
-                    navController.navigate("login") // Chuyển về màn hình đăng nhập
-                } else {
-                    Toast.makeText(context,"Đăng ký thất bại!", Toast.LENGTH_SHORT).show()
-                }
-            }
+    val dangKyError by viewModel.dangKyError.collectAsState()
+
+    LaunchedEffect(dangKyThanhCong, dangKyError) {
+        if (dangKyError != null) {
+            Toast.makeText(context, dangKyError, Toast.LENGTH_SHORT).show()
+        } else if (dangKyThanhCong == true) {
+            Toast.makeText(context, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
+            navController.navigate("login") // Chuyển về màn hình đăng nhập
+        } else if (dangKyThanhCong == false) {
+            Toast.makeText(context, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show()
         }
     }
+
+}
 

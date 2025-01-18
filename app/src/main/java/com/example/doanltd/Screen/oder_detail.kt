@@ -209,6 +209,7 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                             customerNote = it
                             showError = false
                         },
+
                         label = { Text("Nhập địa chỉ.......") },
                         modifier = Modifier.fillMaxWidth(),
                         isError = showError
@@ -227,12 +228,13 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
             // Order Button
             Button(
                 onClick = {
+                    if (customerNote.isBlank()) {
+                        showError = true // Hiển thị lỗi nếu chưa nhập địa chỉ
+                        return@Button
+                    }
+
                     CoroutineScope(Dispatchers.IO).launch {
                         viewModel.themhoadon(user!!.MaNgD,totalAmount.value,customerNote)
-                    }
-                    if (customerNote.isBlank()) {
-                        // Hiển thị lỗi nếu địa chỉ chưa được nhập
-                        showError = true
                     }
 
                 },
@@ -265,7 +267,6 @@ fun OrderDetailsScreen(navController: NavController,viewModel: SanPhamViewModel 
                 CoroutineScope(Dispatchers.IO).launch {
                     cartDao.deleteAllCartItems()
                 }
-
 
                 navController.navigate(Screen.XemDonHang.route) {
                     popUpTo(0) { inclusive = true }

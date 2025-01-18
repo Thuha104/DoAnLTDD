@@ -10,7 +10,6 @@ import com.example.doanltd.RoomDatabase.CartRoom.CartItemEntity
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 
 
-
 @Database(entities = [CartItemEntity::class, NgDungEntity::class], version = 3, exportSchema = false)
 
 abstract class AppDatabase : RoomDatabase() {

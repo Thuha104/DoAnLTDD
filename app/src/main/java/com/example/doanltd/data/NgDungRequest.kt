@@ -6,7 +6,8 @@ data class RegisterRequest(
     @SerializedName("TenNgD") val TenNgD: String,
     @SerializedName("SDT") val sdt: String,
     @SerializedName("TKNgD") val tkNgD: String,
-    @SerializedName("MatKhauNgD") val matKhauNgD: String
+    @SerializedName("MatKhauNgD") val matKhauNgD: String,
+    @SerializedName("Email") val Email: String
 )
 
 // Dùng cho đăng nhập (chỉ cần tài khoản + mật khẩu)
@@ -71,4 +72,16 @@ data class CapNhapDonHangRequest(
 data class CapNhapDonHangReponse(
     val success:Boolean,
     val message:String,
+)
+
+
+data class CapNhapNguoiDungRequest(
+    @SerializedName("MaNgD") val MaNgD: String,
+    @SerializedName("TenNgD") val TenNgD: String,
+    @SerializedName("Email") val Email: String,
+    @SerializedName("SDT") val sdt: String
+)
+data class CapnhapNguoiDungReponse(
+    val success: Boolean,
+    val message: String
 )

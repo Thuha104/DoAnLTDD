@@ -5,9 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,30 +17,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.doanltd.AppDatabase
 import com.example.doanltd.Navigation.Screen
 import com.example.doanltd.R
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
+import com.example.doanltd.View.AuthViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
     var user by remember { mutableStateOf<NgDungEntity?>(null) }
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context).ngDungDao()
 
+    var showDialog by remember { mutableStateOf(false) }
+    var updatedName by remember { mutableStateOf("") }
+    var updatedPhone by remember { mutableStateOf("") }
+    var updatedEmail by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
-        // Di chuyển việc truy vấn vào coroutine
         CoroutineScope(Dispatchers.IO).launch {
             val userList = db.getAll()
             if (userList.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
                     user = userList[0]
+                    updatedName = user?.TenNgD ?: ""
+                    updatedPhone = user?.SDT ?: ""
+                    updatedEmail = user?.Email ?: ""
                 }
             }
         }
@@ -53,36 +65,31 @@ fun ProfileScreen(navController: NavController) {
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                     label = { Text("Home") },
                     selected = false,
-                    onClick = {
-                        navController.navigate(Screen.Home.route)
-                    }
+                    onClick = { navController.navigate(Screen.Home.route) }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Email, contentDescription = "Tin Nhắn") },
                     label = { Text("Tin nhắn") },
                     selected = false,
-                    onClick = {navController.navigate(Screen.Message.route) }
+                    onClick = { navController.navigate(Screen.Message.route) }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Giỏ Hàng") },
                     label = { Text("Giỏ Hàng") },
                     selected = false,
-                    onClick = { navController.navigate(Screen.Cart.route)}
+                    onClick = { navController.navigate(Screen.Cart.route) }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = "Thông Tin") },
                     label = { Text("Thông Tin") },
                     selected = true,
-                    onClick = {
-
-                        navController.navigate(Screen.Profile.route)
-                    }
+                    onClick = { navController.navigate(Screen.Profile.route) }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Cài Đặt") },
                     label = { Text("Cài Đặt") },
                     selected = false,
-                    onClick = { navController.navigate(Screen.Setting.route)}
+                    onClick = { navController.navigate(Screen.Setting.route) }
                 )
             }
         }
@@ -94,7 +101,6 @@ fun ProfileScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile Image
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -124,37 +130,26 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Information Section
             ProfileSection(
-                title = "Thông tin liên hệ",
-                content = "${user?.Email}",
-                onClick = { }
-            )
-
-            ProfileSection(
-                title = "Số điện thoại",
-                content = "${user?.SDT}",
-                onClick = { }
-            )
-
-            ProfileSection(
-                title = "Họ và tên",
-                content = "${user?.TenNgD}",
-                onClick = { }
+                title = "Thông Tin Cá Nhân",
+                content = """
+                    Họ và Tên: ${user?.TenNgD ?: ""}
+                    Số Điện Thoại: ${user?.SDT ?: ""}
+                    Email: ${user?.Email ?: ""}
+                """.trimIndent(),
+                onClick = { showDialog = true }
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // New section for Order History and Orders icons
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                // Order History Icon
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable {navController.navigate(Screen.OrderHistory.route)}
+                    modifier = Modifier.clickable { navController.navigate(Screen.OrderHistory.route) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.History,
@@ -167,10 +162,9 @@ fun ProfileScreen(navController: NavController) {
                     )
                 }
 
-                // Orders Icon
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { navController.navigate(Screen.XemDonHang.route)}
+                    modifier = Modifier.clickable { navController.navigate(Screen.XemDonHang.route) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingBag,
@@ -185,6 +179,65 @@ fun ProfileScreen(navController: NavController) {
             }
         }
 
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Edit Profile") },
+                text = {
+                    Column {
+                        TextField(
+                            value = updatedName,
+                            onValueChange = { updatedName = it },
+                            label = { Text("Họ và Tên") }
+                        )
+                        TextField(
+                            value = updatedPhone,
+                            onValueChange = { updatedPhone = it },
+                            label = { Text("Số điện thoại") }
+                        )
+                        TextField(
+                            value = updatedEmail,
+                            onValueChange = { updatedEmail = it },
+                            label = { Text("Email") }
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                user?.let {
+                                    it.TenNgD = updatedName
+                                    it.SDT = updatedPhone
+                                    it.Email = updatedEmail
+                                    try {
+                                        db.update(it)
+                                        withContext(Dispatchers.Main) {
+                                            viewModel.CapNhapNgDung(it.MaNgD, it.TenNgD, it.Email, it.SDT)
+                                            successMessage = "Cập nhật thành công!"
+                                            Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
+                                            showDialog = false
+                                        }
+                                    } catch (e: Exception) {
+                                        withContext(Dispatchers.Main) {
+                                            errorMessage = "Lỗi: ${e.message}"
+                                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
 

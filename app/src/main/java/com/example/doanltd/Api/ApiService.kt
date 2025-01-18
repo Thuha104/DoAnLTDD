@@ -49,8 +49,9 @@ interface ApiService{
     @POST("hoadon/capnhaptrangthai.php")
     suspend fun capnhapdonhang(@Body request: CapNhapDonHangRequest):CapNhapDonHangReponse
 
+    @POST("ngdung/capnhapnguoidung.php")
+    suspend fun capnhapnguoidung(@Body request: CapNhapNguoiDungRequest):CapnhapNguoiDungReponse
 }
-
 
 object RetrofitInstance{
     val api:ApiService by lazy {

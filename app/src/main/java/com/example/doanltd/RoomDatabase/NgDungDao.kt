@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.example.doanltd.RoomDatabase.NgDungRoom.NgDungEntity
 
 @Dao
@@ -44,4 +45,6 @@ interface NgDungDao {
 
     @Delete
     suspend fun delete(user: NgDungEntity)
+    @Update
+    suspend fun  update(user: NgDungEntity)
 }

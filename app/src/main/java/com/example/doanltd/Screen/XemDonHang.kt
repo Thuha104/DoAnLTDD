@@ -31,6 +31,7 @@ import java.text.NumberFormat
 import java.util.Locale
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.example.doanltd.Navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +64,7 @@ fun XemDonHangScreen(navController: NavController, viewModel: SanPhamViewModel =
             TopAppBar(
                 title = { Text("Danh sách đơn hàng", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = { navController.navigate(Screen.Profile.route)}) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
                 }
